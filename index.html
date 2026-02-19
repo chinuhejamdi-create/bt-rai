@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BLACK TEMPLE · MULTI‑IMAGE · SORT</title>
+  <title>BLACK TEMPLE · PREMIUM FF IDs</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,17 +102,14 @@
       box-shadow: var(--glow);
     }
 
-    /* filter + sort bar */
-    .filter-sort-bar {
+    .filter-wrapper {
       background: rgba(18,18,30,0.75);
       backdrop-filter: blur(14px);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 1.6rem;
       margin: 2rem auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
+      max-width: 620px;
     }
 
     .price-slider {
@@ -126,37 +123,6 @@
       background: var(--accent); border: 3px solid #000;
       border-radius: 50%; cursor: pointer;
       box-shadow: 0 0 24px var(--accent);
-    }
-
-    .sort-buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-      justify-content: center;
-    }
-
-    .sort-btn {
-      background: var(--surface-elevated);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.7rem 1.4rem;
-      border-radius: 999px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-size: 0.9rem;
-    }
-
-    .sort-btn:hover {
-      background: var(--accent-dark);
-      color: #000;
-      border-color: var(--accent);
-    }
-
-    .sort-btn.active {
-      background: var(--accent);
-      color: #000;
-      border-color: var(--accent);
     }
 
     .card-grid {
@@ -173,7 +139,6 @@
       overflow: hidden;
       transition: all 0.3s ease;
       box-shadow: 0 12px 40px rgba(0,0,0,0.55);
-      position: relative;
     }
 
     .id-card:hover {
@@ -195,49 +160,18 @@
       z-index: 10;
     }
 
-    /* Slideshow */
     .img-wrapper {
       height: 190px;
       overflow: hidden;
       cursor: pointer;
-      position: relative;
     }
 
-    .slideshow-container {
-      width: 100%;
-      height: 100%;
-      position: relative;
+    .img-wrapper img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s ease;
     }
 
-    .slide-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      position: absolute;
-      top: 0;
-      left: 0;
-      opacity: 0;
-      transition: opacity 0.8s ease-in-out;
-    }
-
-    .slide-img.active {
-      opacity: 1;
-    }
-
-    .slide-indicator {
-      position: absolute;
-      bottom: 8px;
-      right: 12px;
-      background: rgba(0,0,0,0.7);
-      color: white;
-      padding: 4px 10px;
-      border-radius: 40px;
-      font-size: 0.75rem;
-      z-index: 5;
-      border: 1px solid var(--accent);
-      font-weight: 600;
-      backdrop-filter: blur(4px);
-    }
+    .id-card:hover .img-wrapper img { transform: scale(1.14); }
 
     .card-content {
       padding: 1.3rem;
@@ -353,7 +287,7 @@
 
     .whatsapp-float:hover { transform: scale(1.18); }
 
-    /* ADMIN */
+    /* ─── ADMIN ─── */
     .admin-login-container,
     .admin-panel {
       background: rgba(18,18,30,0.88);
@@ -362,7 +296,7 @@
       border-radius: 28px;
       padding: 2.8rem;
       margin: 5rem auto;
-      max-width: 620px;
+      max-width: 520px;
       box-shadow: 0 0 80px rgba(0,0,0,0.8);
     }
 
@@ -385,6 +319,7 @@
       border-radius: 18px;
       padding: 1.5rem;
       margin-bottom: 1.4rem;
+      position: relative;
     }
 
     .file-upload-btn {
@@ -408,26 +343,6 @@
       margin: 0.4rem 0 1.2rem;
     }
 
-    .image-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 10px 0;
-      max-height: 140px;
-      overflow-y: auto;
-      padding: 6px;
-      background: #0a0a14;
-      border-radius: 20px;
-    }
-    .image-thumb {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 12px;
-      border: 2px solid var(--accent);
-      cursor: pointer;
-    }
-
     @media (max-width: 768px) {
       .card-grid { grid-template-columns: 1fr; }
       .banner { height: 160px; }
@@ -440,112 +355,65 @@
 <div id="app"></div>
 
 <script>
-// ---------- DATA: MULTIPLE IMAGES PER ACCOUNT ----------
 let idList = [
-  { 
-    images: [
-      "https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=600&auto=format",
-      "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format",
-      "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=600&auto=format"
-    ],
-    level: 72, rank: "HEROIC", gunSkins: 48, charSkins: "Chrono, Alok, K", bundle: "Elite pass S24 + emote", description: "Rare account with 3 images – auto slide every 3 sec.", price: 2899, sold: false 
-  },
-  { 
-    images: [
-      "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format",
-      "https://images.unsplash.com/photo-1592155931584-901ac15763e3?w=600&auto=format"
-    ],
-    level: 65, rank: "GRANDMASTER", gunSkins: 37, charSkins: "Alok, Skyler, Hayato", bundle: "Legendary bundle + car skin", description: "Grandmaster rank, 2 images – slideshow.", price: 1999, sold: false 
-  },
-  { 
-    images: [
-      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format"
-    ],
-    level: 95, rank: "LEGENDARY", gunSkins: 120, charSkins: "All limited + DJ Alok", bundle: "Rare glacier + 2 lakh diamonds", description: "LEGENDARY ULTIMATE – single image.", price: 75000, sold: false 
-  }
+  { img: "https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=600&auto=format", level: 72, rank: "HEROIC", gunSkins: 48, charSkins: "Chrono, Alok, K", bundle: "Elite pass S24 + emote", description: "Rare account...", price: 2899, sold: false },
+  { img: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format", level: 65, rank: "GRANDMASTER", gunSkins: 37, charSkins: "Alok, Skyler, Hayato", bundle: "Legendary bundle + car skin", description: "Grandmaster rank...", price: 1999, sold: false },
+  { img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format", level: 95, rank: "LEGENDARY", gunSkins: 120, charSkins: "All limited + DJ Alok", bundle: "Rare glacier + 2 lakh diamonds", description: "LEGENDARY ULTIMATE…", price: 75000, sold: false }
 ];
-
-// ---------- SLIDESHOW ----------
-const slideshowIntervals = {};
-
-function startSlideshow(cardId, images) {
-  if (slideshowIntervals[cardId]) clearInterval(slideshowIntervals[cardId]);
-  if (!images || images.length <= 1) return;
-
-  let currentIdx = 0;
-  const slides = document.querySelectorAll(`#${cardId} .slide-img`);
-  const indicator = document.querySelector(`#${cardId} .slide-indicator`);
-
-  if (slides.length === 0) return;
-
-  slides.forEach((s, i) => {
-    if (i === 0) s.classList.add('active');
-    else s.classList.remove('active');
-  });
-  if (indicator) indicator.innerText = `1/${images.length}`;
-
-  slideshowIntervals[cardId] = setInterval(() => {
-    currentIdx = (currentIdx + 1) % images.length;
-    slides.forEach((s, i) => {
-      if (i === currentIdx) s.classList.add('active');
-      else s.classList.remove('active');
-    });
-    if (indicator) indicator.innerText = `${currentIdx+1}/${images.length}`;
-  }, 3000);
-}
 
 window.openImage = (url) => window.open(url, '_blank');
 
-// ---------- SORT STATE ----------
-let currentSort = 'none'; // 'price-asc', 'price-desc', 'level-asc', 'level-desc'
+window.handleImageUpload = (input, index) => {
+  const file = input.files[0];
+  if (!file) return;
 
-// ---------- RENDER STORE WITH SORT & FILTER ----------
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target.result;
+
+    // Update preview
+    const preview = document.getElementById(`preview${index}`);
+    if (preview) preview.src = dataUrl;
+
+    // Update hidden input — THIS FIXES THE SAVE ISSUE
+    const hidden = document.getElementById(`img${index}`);
+    if (hidden) hidden.value = dataUrl;
+
+    // Also keep data in sync
+    idList[index].img = dataUrl;
+  };
+  reader.readAsDataURL(file);
+};
+
+function buyNow(index) {
+  const item = idList[index];
+  if (item.sold) return;
+  const msg = `Hi! Interested in your Free Fire ID - Level ${item.level} ${item.rank} for ₹${item.price}`;
+  window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+function chatNow(index) {
+  const item = idList[index];
+  if (item.sold) return;
+  const msg = `Hello! I have some questions about ID #${index+1} - Level ${item.level}`;
+  window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
 function renderStore() {
-  const maxPrice = parseInt(document.getElementById('priceSlider')?.value) || 100000;
-  let filtered = idList.filter(id => id.price >= 500 && id.price <= maxPrice);
-
-  // apply sort
-  if (currentSort === 'price-asc') {
-    filtered.sort((a,b) => a.price - b.price);
-  } else if (currentSort === 'price-desc') {
-    filtered.sort((a,b) => b.price - a.price);
-  } else if (currentSort === 'level-asc') {
-    filtered.sort((a,b) => a.level - b.level);
-  } else if (currentSort === 'level-desc') {
-    filtered.sort((a,b) => b.level - a.level);
-  }
-
+  const max = parseInt(document.getElementById('priceSlider')?.value) || 100000;
+  const filtered = idList.filter(it => it.price >= 500 && it.price <= max && !it.sold);
   const container = document.getElementById('idCardContainer');
   if (!container) return;
   container.innerHTML = '';
 
   filtered.forEach((item, idx) => {
-    const globalIdx = idList.findIndex(x => x.images[0] === item.images[0] && x.price === item.price);
-    const cardId = `card-${Date.now()}-${idx}-${Math.random()}`;
-
+    const globalIdx = idList.indexOf(item);
     const card = document.createElement('div');
     card.className = 'id-card';
-    card.id = cardId;
-
-    if (item.sold) {
-      const badge = document.createElement('div');
-      badge.className = 'sold-badge';
-      badge.textContent = 'SOLD';
-      card.appendChild(badge);
-    }
-
-    // build slides
-    let slidesHtml = '';
-    item.images.forEach((img, i) => {
-      slidesHtml += `<img class="slide-img ${i === 0 ? 'active' : ''}" src="${img}" onclick="openImage('${img}')" onerror="this.src='https://placehold.co/600x400/1a1a24/00d4ff?text=NO+IMAGE'">`;
-    });
 
     card.innerHTML = `
-      <div class="img-wrapper">
-        <div class="slideshow-container">
-          ${slidesHtml}
-          ${item.images.length > 1 ? `<span class="slide-indicator">1/${item.images.length}</span>` : ''}
-        </div>
+      <div class="img-wrapper" onclick="openImage('${item.img}')">
+        <img src="${item.img}" alt="FF ID" onerror="this.src='https://placehold.co/600x400/1a1a24/00d4ff?text=NO+IMAGE'">
       </div>
       <div class="card-content">
         <div class="id-stats">
@@ -559,88 +427,18 @@ function renderStore() {
         <div class="description-box">${item.description}</div>
         <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
         <div class="btn-group">
-          <button class="btn btn-whatsapp" onclick="buyNow(${globalIdx})" ${item.sold?'disabled':''}>
+          <button class="btn btn-whatsapp" onclick="buyNow(${globalIdx})">
             <i class="fa-brands fa-whatsapp"></i> BUY NOW
           </button>
-          <button class="btn btn-chat" onclick="chatNow(${globalIdx})" ${item.sold?'disabled':''}>
+          <button class="btn btn-chat" onclick="chatNow(${globalIdx})">
             <i class="fa-brands fa-whatsapp"></i> CHAT
           </button>
         </div>
       </div>
     `;
     container.appendChild(card);
-
-    if (item.images.length > 1) {
-      setTimeout(() => startSlideshow(cardId, item.images), 150);
-    }
   });
 }
-
-// ---------- SORT HANDLER ----------
-function setSort(type) {
-  currentSort = type;
-  // update active button style
-  document.querySelectorAll('.sort-btn').forEach(btn => {
-    if (btn.dataset.sort === type) btn.classList.add('active');
-    else btn.classList.remove('active');
-  });
-  renderStore();
-}
-
-// ---------- BUY/CHAT ----------
-window.buyNow = (idx) => {
-  if (idx === -1 || idx >= idList.length) return;
-  const p = idList[idx];
-  if (p.sold) return;
-  const msg = `🛒 *NEW ORDER*%0a*Level:* ${p.level} *Rank:* ${p.rank}%0a*Skins:* ${p.gunSkins}%0a*Chars:* ${p.charSkins}%0a*Bundle:* ${p.bundle}%0a*Desc:* ${p.description}%0a*Price:* ₹${p.price}%0a--- Buyer info ---`;
-  window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
-};
-
-window.chatNow = (idx) => {
-  if (idx === -1 || idx >= idList.length) return;
-  const p = idList[idx];
-  window.open(`https://wa.me/917619643039?text=Hi, I'm interested in ID: Level ${p.level} ${p.rank} (₹${p.price})`, '_blank');
-};
-
-// ---------- ADMIN FUNCTIONS ----------
-window.handleImageUpload = (input, index) => {
-  const files = Array.from(input.files);
-  if (files.length === 0) return;
-
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      idList[index].images.push(e.target.result);
-      refreshAfterAdmin();
-    };
-    reader.readAsDataURL(file);
-  });
-};
-
-window.addImageToId = (idx) => {
-  const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
-  input.multiple = true;
-  input.style.display = 'none';
-  input.onchange = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-    let loaded = 0;
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        idList[idx].images.push(ev.target.result);
-        loaded++;
-        if (loaded === files.length) refreshAfterAdmin();
-      };
-      reader.readAsDataURL(file);
-    });
-    document.body.removeChild(input);
-  };
-  document.body.appendChild(input);
-  input.click();
-};
 
 function renderAdminPanel() {
   const content = document.getElementById('adminContent');
@@ -650,100 +448,92 @@ function renderAdminPanel() {
   idList.forEach((item, i) => {
     const card = document.createElement('div');
     card.className = 'admin-card';
-
-    let thumbs = '';
-    item.images.forEach((img, imgIdx) => {
-      thumbs += `<img class="image-thumb" src="${img}" onclick="openImage('${img}')" title="Image ${imgIdx+1}">`;
-    });
-
     card.innerHTML = `
-      <h3 style="display:flex; justify-content:space-between;">
-        ID #${i+1}
-        <button class="file-upload-btn" style="width:auto; padding:0.4rem 1rem; margin:0;" onclick="addImageToId(${i})">➕ ADD IMAGE</button>
-      </h3>
-      <div class="image-list">${thumbs || '<span style="color:var(--text-muted);">No images</span>'}</div>
+      <h3>ID #${i+1}</h3>
 
-      <input type="file" id="file${i}" accept="image/*" multiple style="display:none" onchange="handleImageUpload(this, ${i})">
-      
+      <img id="preview${i}" class="preview-thumb" src="${item.img || 'https://placehold.co/600x180/1a1a24/444?text=Upload+Image'}" alt="preview">
+
+      <input type="file" id="file${i}" accept="image/*" style="display:none" onchange="handleImageUpload(this, ${i})">
+      <button class="file-upload-btn" onclick="document.getElementById('file${i}').click()">
+        <i class="fa-solid fa-image"></i> Upload New Image
+      </button>
+
+      <input type="hidden" id="img${i}" value="${item.img || ''}">
+
       <input id="level${i}"   value="${item.level}"       placeholder="Level">
       <input id="rank${i}"    value="${item.rank}"        placeholder="Rank">
-      <input id="gunSkins${i}" value="${item.gunSkins}"   placeholder="Gun Skins">
-      <input id="charSkins${i}" value="${item.charSkins}" placeholder="Characters">
-      <input id="bundle${i}"  value="${item.bundle}"      placeholder="Bundle">
+      <input id="gunSkins${i}" value="${item.gunSkins}"   placeholder="Gun Skins count">
+      <input id="charSkins${i}" value="${item.charSkins}" placeholder="Characters (comma separated)">
+      <input id="bundle${i}"  value="${item.bundle}"      placeholder="Bundle / Elite Pass">
       <textarea id="desc${i}"  placeholder="Description">${item.description}</textarea>
       <input id="price${i}"   value="${item.price}"       placeholder="Price (₹)">
 
       <div style="margin:1.2rem 0;">
-        <label><input type="checkbox" id="sold${i}" ${item.sold ? 'checked' : ''}> Sold</label>
+        <label><input type="checkbox" id="sold${i}" ${item.sold ? 'checked' : ''}> Sold / Not Available</label>
       </div>
 
-      <button style="background:var(--accent);color:#000;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;margin-right:0.8rem;" onclick="updateId(${i})">💾 SAVE</button>
-      <button style="background:var(--danger);color:white;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;" onclick="deleteId(${i})">🗑 DELETE</button>
+      <button style="background:var(--accent);color:#000;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;margin-right:0.8rem;" onclick="updateId(${i})">SAVE CHANGES</button>
+      <button style="background:var(--danger);color:white;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;" onclick="deleteId(${i})">DELETE</button>
     `;
     content.appendChild(card);
   });
 
   const addBtn = document.createElement('button');
-  addBtn.textContent = '+ ADD NEW ACCOUNT (upload first image)';
+  addBtn.textContent = '+ ADD NEW ACCOUNT (upload image first)';
   addBtn.style.cssText = 'width:100%; padding:1.2rem; background:var(--success); color:#000; border:none; border-radius:999px; font-weight:700; font-size:1.1rem; margin:1.8rem 0; cursor:pointer;';
   addBtn.onclick = () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
-    input.multiple = true;
     input.style.display = 'none';
     input.onchange = e => {
-      const files = Array.from(e.target.files);
-      if (files.length === 0) return;
-      let newImages = [];
-      let loaded = 0;
-      files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-          newImages.push(ev.target.result);
-          loaded++;
-          if (loaded === files.length) {
-            idList.push({
-              images: newImages,
-              level: 60,
-              rank: "HEROIC",
-              gunSkins: 25,
-              charSkins: "New Character",
-              bundle: "New Bundle",
-              description: "Fresh account – edit details",
-              price: 1999,
-              sold: false
-            });
-            refreshAfterAdmin();
-          }
-        };
-        reader.readAsDataURL(file);
-      });
-      document.body.removeChild(input);
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = ev => {
+        idList.push({
+          img: ev.target.result,
+          level: 50,
+          rank: "HEROIC",
+          gunSkins: 20,
+          charSkins: "New",
+          bundle: "New bundle",
+          description: "Newly uploaded – please edit details",
+          price: 1999,
+          sold: false
+        });
+        refreshAfterAdmin();
+      };
+      reader.readAsDataURL(file);
     };
     document.body.appendChild(input);
     input.click();
+    setTimeout(() => document.body.removeChild(input), 1000);
   };
   content.appendChild(addBtn);
 }
 
 window.updateId = (idx) => {
+  const hiddenImg = document.getElementById(`img${idx}`).value;
+
   idList[idx] = {
-    images: idList[idx].images, // preserve images
+    img: hiddenImg || idList[idx].img,  // use new image if uploaded, else keep old
     level: parseInt(document.getElementById(`level${idx}`).value) || 0,
-    rank: document.getElementById(`rank${idx}`).value || "",
+    rank: document.getElementById(`rank${idx}`).value.trim() || "HEROIC",
     gunSkins: parseInt(document.getElementById(`gunSkins${idx}`).value) || 0,
-    charSkins: document.getElementById(`charSkins${idx}`).value || "",
-    bundle: document.getElementById(`bundle${idx}`).value || "",
-    description: document.getElementById(`desc${idx}`).value || "",
+    charSkins: document.getElementById(`charSkins${idx}`).value.trim() || "",
+    bundle: document.getElementById(`bundle${idx}`).value.trim() || "",
+    description: document.getElementById(`desc${idx}`).value.trim() || "",
     price: parseInt(document.getElementById(`price${idx}`).value) || 0,
     sold: document.getElementById(`sold${idx}`).checked
   };
+
+  alert("Account #" + (idx+1) + " saved successfully!");
   refreshAfterAdmin();
 };
 
 window.deleteId = (idx) => {
-  if (confirm("Delete this account?")) {
+  if (confirm("Are you sure you want to delete this account?")) {
     idList.splice(idx, 1);
     refreshAfterAdmin();
   }
@@ -751,10 +541,13 @@ window.deleteId = (idx) => {
 
 function refreshAfterAdmin() {
   renderAdminPanel();
-  if (document.getElementById('idCardContainer')) renderStore();
+  const storeContainer = document.getElementById('idCardContainer');
+  if (storeContainer) renderStore();
 }
 
-// ---------- ROUTER ----------
+// ────────────────────────────────────────────────
+// ROUTER / PAGE LOADER
+// ────────────────────────────────────────────────
 function loadApp() {
   const isAdmin = window.location.pathname.includes('/admin');
   const app = document.getElementById('app');
@@ -763,18 +556,19 @@ function loadApp() {
     app.innerHTML = `
       <div class="admin-login-container">
         <h2 style="color:var(--accent); margin-bottom:2rem; text-align:center;">ADMIN LOGIN</h2>
-        <input type="password" id="adminPass" placeholder="Password">
+        <input type="password" id="adminPass" placeholder="Enter admin password">
         <button onclick="checkAdmin()" style="width:100%; padding:1.2rem; margin-top:1.2rem; background:var(--accent); color:#000; border:none; border-radius:999px; font-size:1.1rem; font-weight:700; cursor:pointer;">LOGIN</button>
-        <div id="loginError" style="color:var(--danger); margin-top:1.2rem; text-align:center;"></div>
-        <p style="margin-top:1.8rem; color:var(--text-muted); text-align:center;">password: admin123</p>
+        <div id="loginError" style="color:var(--danger); margin-top:1.2rem; text-align:center; min-height:1.5rem;"></div>
+        <p style="margin-top:1.8rem; color:var(--text-muted); text-align:center; font-size:0.95rem;">Default password: admin123</p>
       </div>
     `;
 
     window.checkAdmin = () => {
-      if (document.getElementById('adminPass').value === 'admin123') {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === 'admin123') {
         showAdminPanel();
       } else {
-        document.getElementById('loginError').textContent = 'Wrong password';
+        document.getElementById('loginError').textContent = 'Incorrect password';
       }
     };
 
@@ -783,10 +577,10 @@ function loadApp() {
         <div class="container">
           <div style="display:flex; justify-content:space-between; align-items:center; margin:2.5rem 0 1.5rem;">
             <div class="owner-tag"><i class="fa-solid fa-crown"></i> ADMIN PANEL</div>
-            <button onclick="window.location.href='/'" style="background:#333; color:white; padding:0.8rem 1.6rem; border:1px solid var(--accent); border-radius:999px; cursor:pointer;">← BACK TO STORE</button>
+            <button onclick="window.location.href='/'" style="background:#333; color:white; padding:0.8rem 1.6rem; border:1px solid var(--accent); border-radius:999px; cursor:pointer; font-weight:600;">← Back to Store</button>
           </div>
           <div class="admin-panel">
-            <h2 style="color:var(--accent); margin-bottom:1.5rem;">Manage Accounts</h2>
+            <h2 style="color:var(--accent); margin-bottom:1.5rem;">Manage Free Fire Accounts</h2>
             <div id="adminContent"></div>
           </div>
         </div>
@@ -794,41 +588,33 @@ function loadApp() {
       renderAdminPanel();
     }
   } else {
-    // MAIN STORE
+    // Main store page
     app.innerHTML = `
       <div class="container">
         <div class="header">
           <div class="logo">BLACK TEMPLE</div>
-          <div class="owner-tag"><i class="fa-solid fa-crown"></i> BT RAI · ALL INDIA TRUSTED</div>
+          <div class="owner-tag"><i class="fa-solid fa-crown"></i> BT RAI</div>
         </div>
 
         <div class="banner">
           <div class="banner-content">
-            <h1>MULTI‑IMAGE · AUTO SLIDE</h1>
-            <p style="margin-top:0.7rem;">⭐ ALL INDIA TRUSTED DEALER ⭐</p>
+            <h1>PREMIUM FREE FIRE IDs</h1>
+            <p style="margin-top:0.7rem;">ALL INDIA TRUSTED DEALER</p>
           </div>
         </div>
 
-        <div class="filter-sort-bar">
-          <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-weight:600;">
+        <div class="filter-wrapper">
+          <div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-weight:600;">
             <span>₹500</span>
             <span id="priceDisplay">₹100,000</span>
           </div>
           <input type="range" min="500" max="100000" value="100000" step="500" id="priceSlider" class="price-slider">
-
-          <div class="sort-buttons">
-            <button class="sort-btn" data-sort="price-asc" onclick="setSort('price-asc')">💰 Price ↓</button>
-            <button class="sort-btn" data-sort="price-desc" onclick="setSort('price-desc')">💰 Price ↑</button>
-            <button class="sort-btn" data-sort="level-asc" onclick="setSort('level-asc')">📊 Level ↓</button>
-            <button class="sort-btn" data-sort="level-desc" onclick="setSort('level-desc')">📊 Level ↑</button>
-            <button class="sort-btn" data-sort="none" onclick="setSort('none')">✕ Reset</button>
-          </div>
         </div>
 
-        <h2 class="section-title">⚡ ACCOUNTS · 3s AUTO SLIDE</h2>
+        <h2 class="section-title">AVAILABLE ACCOUNTS</h2>
         <div class="card-grid" id="idCardContainer"></div>
 
-        <h2 class="section-title">📞 CONTACT</h2>
+        <h2 class="section-title">CONTACT US</h2>
         <div style="background:rgba(20,20,40,0.6); backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:20px; padding:2rem; margin:2rem 0;">
           <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; text-align:center;">
             <div><i class="fa-solid fa-phone-volume" style="font-size:2rem;color:var(--accent);"></i><br>+91 76196 43039</div>
@@ -845,7 +631,7 @@ function loadApp() {
           <div class="footer-item"><i class="fa-brands fa-instagram"></i><br><a href="https://instagram.com/black_temple_official_" target="_blank" style="color:var(--text);text-decoration:none;">black_temple_official_</a></div>
         </div>
         <div style="text-align:center; margin-top:3rem; color:var(--text-muted);">
-          © 2025–2026 BLACK TEMPLE · ALL INDIA TRUSTED DEALER
+          © 2025–2026 BLACK TEMPLE
         </div>
       </footer>
 
