@@ -1,883 +1,872 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BLACK TEMPLE · ULTIMATE FF STORE v2</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BLACK TEMPLE · MULTI‑IMAGE · SORT</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Exo:wght@500;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface-elevated: #1a1a24;
+      --border: #2a2a3a;
+      --text: #e8e8ff;
+      --text-muted: #a0a0cc;
+      --accent: #00d4ff;
+      --accent-dark: #0099bb;
+      --danger: #ff4d6a;
+      --success: #00ff9d;
+      --glow: 0 0 24px rgba(0, 212, 255, 0.28);
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
     body {
-      background: #0a0a0a;
-      font-family: "Exo", sans-serif; color: #f0f0f0; line-height: 1.4; min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Exo', sans-serif;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    .container { max-width: 1480px; margin: 0 auto; padding: 0 16px; }
+
+    h1, h2, h3 { font-family: 'Orbitron', sans-serif; letter-spacing: 1px; }
+    h1 { font-size: clamp(2rem, 6vw, 3.2rem); }
+    h2 { font-size: clamp(1.5rem, 4.5vw, 2.2rem); }
+
+    .section-title {
+      margin: 2.8rem 0 1.4rem;
+      padding-left: 1.1rem;
+      border-left: 5px solid var(--accent);
+      font-weight: 700;
+    }
+
+    .header {
+      padding: 1.2rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 2.4rem;
+      font-weight: 900;
+      background: linear-gradient(90deg, #00d4ff, #ff00aa, #00d4ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 30px rgba(0,212,255,0.5);
+    }
+
+    .owner-tag {
+      background: rgba(20,20,40,0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.7rem 1.6rem;
+      font-size: 1rem;
+      font-weight: 600;
+      box-shadow: var(--glow);
+    }
+
+    .banner {
+      margin: 2rem 0;
+      height: clamp(180px, 28vw, 240px);
+      background: linear-gradient(rgba(10,10,20,0.88), rgba(10,10,20,0.75)),
+                  url('https://images.unsplash.com/photo-1557683316-973673baf926?w=1600&auto=format&q=80') center/cover;
+      border-radius: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 70px rgba(0,0,0,0.65), inset 0 0 50px rgba(0,212,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .banner-content {
+      background: rgba(20,20,40,0.7);
+      backdrop-filter: blur(14px);
+      padding: 1.6rem 3rem;
+      border-radius: 20px;
+      border: 1px solid rgba(0,212,255,0.35);
+      box-shadow: var(--glow);
+    }
+
+    /* filter + sort bar */
+    .filter-sort-bar {
+      background: rgba(18,18,30,0.75);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.6rem;
+      margin: 2rem auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .price-slider {
+      width: 100%; height: 10px; border-radius: 999px;
+      background: linear-gradient(to right, var(--surface) 0%, var(--accent) 50%, var(--surface) 100%);
+      appearance: none;
+    }
+
+    .price-slider::-webkit-slider-thumb {
+      appearance: none; width: 26px; height: 26px;
+      background: var(--accent); border: 3px solid #000;
+      border-radius: 50%; cursor: pointer;
+      box-shadow: 0 0 24px var(--accent);
+    }
+
+    .sort-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center;
+    }
+
+    .sort-btn {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .sort-btn:hover {
+      background: var(--accent-dark);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .sort-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+      gap: 1.8rem;
+      margin: 1.5rem 0;
+    }
+
+    .id-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.55);
       position: relative;
     }
-    body::before {
-      content: ""; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: radial-gradient(circle at 30% 40%, #ffaa0015 0%, transparent 60%);
-      pointer-events: none; z-index: 0;
+
+    .id-card:hover {
+      transform: translateY(-12px);
+      box-shadow: var(--glow), 0 0 0 2px rgba(0,212,255,0.45);
+      border-color: var(--accent);
     }
-    .container { max-width: 1400px; margin: 0 auto; padding: 0 20px; position: relative; z-index: 10; }
-    
-    /* typography */
-    h1 { font-size: 1.8rem; } h2 { font-size: 1.6rem; } p, li, a, div, button, input, textarea { font-size: 0.9rem; }
-    
-    /* neon accents */
-    .section-title {
-      margin: 35px 0 20px; border-left: 8px solid #ffaa00; padding-left: 15px;
-      background: linear-gradient(90deg, rgba(255,170,0,0.15) 0%, transparent 90%);
-      backdrop-filter: blur(2px); border-radius: 0 30px 30px 0;
-      text-transform: uppercase; letter-spacing: 2px; font-weight: 800;
+
+    .sold-badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: rgba(255,77,106,0.92);
+      color: white;
+      padding: 0.5rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      backdrop-filter: blur(8px);
+      z-index: 10;
     }
-    
-    .header {
-      padding: 15px 0 8px; display: flex; align-items: center; justify-content: space-between;
-      border-bottom: 2px solid #ffaa00; background: rgba(20,20,20,0.9); backdrop-filter: blur(8px);
-      border-radius: 50px 50px 0 0; margin: 15px 0 20px; padding: 15px 25px;
-      box-shadow: 0 10px 30px #ffaa0020;
-    }
-    .logo { font-weight: 900; font-size: 2rem; color: #ffffff; text-shadow: 0 0 15px #ffaa00; display: flex; align-items: center; gap: 8px; }
-    .logo span:last-child { color: #ffaa00; }
-    .visitor-counter {
-      background: #1a1a1a; border: 2px solid #ffaa00; border-radius: 60px; padding: 6px 20px;
-      font-size: 0.9rem; box-shadow: 0 0 15px #ffaa00; font-weight: 700;
-    }
-    
-    .owner-tag {
-      background: #000; border: 2px solid #ffaa00; border-radius: 60px; padding: 8px 30px;
-      margin: 10px 0 5px; display: inline-block; box-shadow: 0 0 20px #ffaa00;
-      font-size: 1rem; color: #ffffff; font-weight: 800; text-transform: uppercase;
-    }
-    
-    /* banner */
-    .banner {
-      background: linear-gradient(145deg, #1a1a1a, #000), url('https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=1000&auto=format') center/cover no-repeat;
-      background-blend-mode: overlay; height: 250px; margin: 20px 0 25px; border-radius: 50px;
-      border: 2px solid #ffaa00; box-shadow: 0 0 50px #ffaa0060; display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-    }
-    .banner::after { content: ''; position: absolute; width: 100%; height: 100%; background: repeating-linear-gradient(45deg, #ffaa0010 0px, #ffaa0010 20px, transparent 20px, transparent 40px); }
-    .banner-overlay { background: rgba(0,0,0,0.85); padding: 15px 40px; border-radius: 60px; border: 2px solid #ffaa00; backdrop-filter: blur(8px); text-align: center; z-index: 2; }
-    .banner h1 { color: #fff; text-shadow: 0 0 20px #ffaa00; font-size: 2rem; }
-    
-    /* filter panel */
-    .filter-wrapper {
-      display: flex; flex-direction: column; align-items: center; margin: 25px 0 30px;
-      background: rgba(20,20,20,0.97); backdrop-filter: blur(8px); border-radius: 70px;
-      padding: 25px 35px; border: 2px solid #ffaa00; box-shadow: 0 0 40px #ffaa0040;
-    }
-    .filter-row { display: flex; flex-wrap: wrap; gap: 25px; justify-content: center; width: 100%; }
-    .filter-group { min-width: 200px; }
-    .filter-group label { display: block; color: #ffaa00; font-weight: 700; margin-bottom: 5px; }
-    .filter-group select, .filter-group input {
-      background: #1a1a1a; border: 2px solid #ffaa00; border-radius: 40px; padding: 10px 20px;
-      color: white; width: 100%; font-weight: 600; outline: none;
-    }
-    .price-slider-container { width: 100%; max-width: 500px; margin: 15px 0 0; }
-    .price-slider { width: 100%; height: 8px; border-radius: 10px; background: #333; outline: none; -webkit-appearance: none; }
-    .price-slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #ffaa00; border-radius: 50%; cursor: pointer; border: 2px solid #fff; box-shadow: 0 0 20px #ffaa00; }
-    .price-value { margin-top: 12px; font-size: 1.2rem; background: #222; padding: 8px 30px; border-radius: 40px; border: 2px solid #ffaa00; color: #fff; font-weight: 800; }
-    
-    /* rank chips */
-    .rank-filter {
-      display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin: 20px 0 5px;
-      padding-top: 20px; border-top: 2px solid #ffaa0040;
-    }
-    .rank-chip {
-      background: #1a1a1a; border: 2px solid #444; border-radius: 40px; padding: 8px 24px;
-      font-size: 0.85rem; font-weight: 800; cursor: pointer; transition: 0.2s; color: #ccc;
-      text-transform: uppercase; letter-spacing: 0.5px;
-    }
-    .rank-chip.active { background: #ffaa00; border-color: #fff; color: #000; box-shadow: 0 0 25px #ffaa00; transform: scale(1.05); }
-    .rank-chip:hover { border-color: #ffaa00; color: #fff; }
-    
-    /* card grid */
-    .card-grid { 
-      display: grid; grid-template-columns: 1fr; gap: 25px; margin: 25px 0; 
-    }
-    @media (min-width: 768px) { .card-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1024px) { .card-grid { grid-template-columns: repeat(3, 1fr); } }
-    
-    .id-card { 
-      background: rgba(22,22,22,0.98); backdrop-filter: blur(4px); border-radius: 30px; 
-      border: 1px solid #ffaa00; box-shadow: 0 15px 25px -15px black, 0 0 25px #ffaa0030; 
-      transition: 0.25s; position: relative; display: flex; flex-direction: column; 
+
+    /* Slideshow */
+    .img-wrapper {
+      height: 190px;
       overflow: hidden;
+      cursor: pointer;
+      position: relative;
     }
-    .id-card:hover { transform: translateY(-8px); box-shadow: 0 0 35px #ffaa00, 0 0 0 2px #ffaa00 inset; }
-    
-    .sold-badge, .hot-badge { 
-      position: absolute; top: 12px; right: 12px; background: #aa0000; border: 2px solid #ffaa00; 
-      color: #fff; padding: 6px 16px; border-radius: 40px; font-weight: 900; 
-      box-shadow: 0 0 25px #ff0000; z-index: 15; font-size: 0.75rem; text-transform: uppercase;
+
+    .slideshow-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
     }
-    .hot-badge { background: #ffaa00; color: #000; box-shadow: 0 0 25px #ffaa00; right: auto; left: 12px; }
-    
-    .img-wrapper { height: 240px; overflow: hidden; border-bottom: 3px solid #ffaa00; border-radius: 30px 30px 0 0; cursor: pointer; position: relative; }
-    .img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
-    .id-card:hover .img-wrapper img { transform: scale(1.1); }
-    
-    .card-content { padding: 18px 16px; flex: 1; }
-    .id-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 12px 0; }
-    .stat-item { background: #2a2a2a; padding: 5px 4px; border-radius: 30px; text-align: center; border: 1px solid #ffaa00; font-size: 0.7rem; font-weight: 700; }
-    .rare-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
-    .rare-tag { background: #222; border: 1px solid #ffaa00; border-radius: 30px; padding: 4px 12px; font-size: 0.65rem; color: #ffaa00; font-weight: 800; }
-    .description-box { background: #1a1a1a; border-left: 4px solid #ffaa00; padding: 10px 12px; margin: 10px 0 12px; border-radius: 16px; font-size: 0.8rem; }
-    .price { font-size: 1.8rem; font-weight: 900; text-shadow: 0 0 10px #ffaa00; margin: 8px 0 15px; text-align: center; color: #fff; }
-    .btn-group { display: flex; gap: 10px; margin-top: auto; }
-    .btn { 
-      padding: 10px 16px; border: 2px solid #ffaa00; border-radius: 40px; background: transparent; 
-      color: #f0f0f0; font-weight: 800; cursor: pointer; transition: 0.2s; text-transform: uppercase; 
-      font-size: 0.75rem; display: inline-flex; align-items: center; gap: 6px; flex: 1; justify-content: center;
+
+    .slide-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
     }
-    .btn-neon { background: #222; box-shadow: 0 0 20px #ffaa00; }
-    .btn-neon:hover { background: #ffaa00; color: #000; }
-    .btn-outline:hover { background: #ffaa0030; }
-    
-    /* featured */
-    .featured-grid {
-      display: grid; grid-template-columns: 1fr; gap: 20px; margin: 25px 0 35px;
+
+    .slide-img.active {
+      opacity: 1;
     }
-    @media (min-width: 768px) { .featured-grid { grid-template-columns: repeat(3, 1fr); } }
-    
-    /* trust badges */
-    .trust-badges {
-      display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin: 35px 0;
+
+    .slide-indicator {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      z-index: 5;
+      border: 1px solid var(--accent);
+      font-weight: 600;
+      backdrop-filter: blur(4px);
     }
-    .badge-item {
-      background: #1a1a1a; border: 2px solid #ffaa00; border-radius: 70px;
-      padding: 15px 30px; display: flex; align-items: center; gap: 12px; font-weight: 800;
-      backdrop-filter: blur(4px); box-shadow: 0 0 25px #ffaa0030;
+
+    .card-content {
+      padding: 1.3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
-    .badge-item i { font-size: 1.6rem; color: #ffaa00; }
-    
-    /* testimonials */
-    .testimonial-grid {
-      display: grid; grid-template-columns: 1fr; gap: 25px; margin: 25px 0;
+
+    .id-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.7rem;
     }
-    @media (min-width: 768px) { .testimonial-grid { grid-template-columns: repeat(3, 1fr); } }
-    .testimonial-card {
-      background: #1a1a1a; border-radius: 40px; padding: 25px;
-      border: 2px solid #ffaa00; box-shadow: 0 0 30px #ffaa0020;
+
+    .stat-item {
+      background: rgba(30,30,50,0.65);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.6rem;
+      text-align: center;
+      font-size: 0.85rem;
+      font-weight: 600;
     }
-    .testimonial-card p { font-style: italic; margin: 12px 0; font-size: 0.9rem; }
-    .testimonial-author { display: flex; align-items: center; gap: 12px; color: #ffaa00; font-weight: 800; }
-    
-    /* footer */
-    .footer-black { background: #0a0a0a; border-top: 4px solid #ffaa00; margin-top: 60px; padding: 35px 0 20px; }
-    .footer-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 25px; max-width: 1200px; margin: 0 auto; }
-    .footer-item { flex: 1 1 180px; background: #1a1a1a; padding: 15px 10px; border-radius: 60px; border: 2px solid #ffaa00; text-align: center; font-size: 1rem; }
-    .footer-item i { font-size: 1.4rem; margin-right: 8px; color: #ffaa00; }
-    .footer-item a { color: #fff; text-decoration: none; font-weight: 700; }
-    
-    /* contact */
-    .contact-section { 
-      background: #1a1a1a; backdrop-filter: blur(5px); border-radius: 60px; padding: 30px; 
-      margin: 30px 0; border: 2px solid #ffaa00; box-shadow: 0 0 40px #ffaa0040;
+
+    .description-box {
+      background: rgba(20,20,40,0.55);
+      border-left: 4px solid var(--accent);
+      padding: 0.9rem 1.1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
-    .contact-grid { display: flex; flex-wrap: wrap; gap: 30px; justify-content: space-around; align-items: center; }
-    
-    /* floating */
-    .whatsapp-float { 
-      position: fixed; bottom: 25px; right: 20px; background: #25D366; 
-      font-size: 2rem; width: 70px; height: 70px; border-radius: 50%; display: flex; 
-      align-items: center; justify-content: center; box-shadow: 0 0 40px #25D366; 
-      z-index: 99; border: 3px solid #fff; color: white; transition: 0.2s;
+
+    .price {
+      font-size: 1.9rem;
+      font-weight: 900;
+      color: var(--accent);
+      text-shadow: 0 0 18px rgba(0,212,255,0.6);
     }
-    .whatsapp-float:hover { transform: scale(1.1); }
-    
-    /* admin */
+
+    .btn-group {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 0.9rem;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.28s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+    }
+
+    .btn-whatsapp { background: #25D366; color: #000; }
+    .btn-whatsapp:hover { background: #20b858; transform: scale(1.05); }
+
+    .btn-chat {
+      background: var(--surface-elevated);
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+    }
+    .btn-chat:hover { background: rgba(0,212,255,0.18); transform: scale(1.03); }
+
+    .footer-black {
+      background: rgba(10,10,20,0.92);
+      backdrop-filter: blur(12px);
+      border-top: 2px solid var(--border);
+      padding: 3.5rem 0 2rem;
+      margin-top: 5rem;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.6rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 1rem;
+    }
+
+    .footer-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.4rem;
+      text-align: center;
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      width: 68px; height: 68px;
+      background: #25D366;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.9rem;
+      box-shadow: 0 12px 40px rgba(37,213,102,0.45);
+      z-index: 9999;
+      transition: all 0.3s;
+    }
+
+    .whatsapp-float:hover { transform: scale(1.18); }
+
+    /* ADMIN */
+    .admin-login-container,
     .admin-panel {
-      background: #1a1a1a; border: 3px solid #ffaa00; border-radius: 50px;
-      padding: 25px; margin: 30px 0; box-shadow: 0 0 60px #ffaa00;
+      background: rgba(18,18,30,0.88);
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 2.8rem;
+      margin: 5rem auto;
+      max-width: 620px;
+      box-shadow: 0 0 80px rgba(0,0,0,0.8);
     }
-    .admin-title { font-size: 1.8rem; color: #ffaa00; margin-bottom: 20px; }
-    .admin-content { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 25px; }
-    .admin-card { background: #252525; border-radius: 40px; padding: 20px; border: 2px solid #ffaa00; }
-    .admin-card input, .admin-card textarea, .admin-card select {
-      width: 100%; background: #1a1a1a; border: 2px solid #ffaa00; color: white; 
-      padding: 12px 15px; border-radius: 40px; margin-bottom: 12px; font-size: 0.9rem;
+
+    .admin-login-container input,
+    .admin-card input,
+    .admin-card textarea {
+      width: 100%;
+      padding: 1rem 1.3rem;
+      margin: 0.7rem 0;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 1.05rem;
     }
-    .btn-small { 
-      background: #ffaa00; border: none; color: black; font-weight: 800; 
-      padding: 10px 18px; border-radius: 40px; cursor: pointer; margin-right: 8px;
-      font-size: 0.85rem; border: 2px solid transparent;
+
+    .admin-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 1.5rem;
+      margin-bottom: 1.4rem;
     }
-    .btn-small:hover { background: transparent; border-color: #ffaa00; color: #ffaa00; }
-    
-    /* login */
-    .admin-login-container {
-      max-width: 420px; margin: 120px auto; background: #1a1a1a;
-      border: 3px solid #ffaa00; border-radius: 80px; padding: 45px; text-align: center;
-      box-shadow: 0 0 100px #ffaa00;
+
+    .file-upload-btn {
+      background: var(--accent-dark);
+      color: #000;
+      border: none;
+      width: 100%;
+      padding: 1rem;
+      border-radius: 999px;
+      font-weight: 700;
+      margin: 0.8rem 0 1.2rem;
+      cursor: pointer;
+      font-size: 1rem;
     }
-    .admin-login-container h2 { color: #ffaa00; font-size: 2.2rem; }
-    .admin-login-container input {
-      width: 100%; padding: 18px 25px; margin: 15px 0; border-radius: 60px; 
-      border: 2px solid #ffaa00; background: #000; color: white; font-size: 1rem;
+
+    .preview-thumb {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      display: block;
+      margin: 0.4rem 0 1.2rem;
     }
-    .admin-login-container button {
-      background: #ffaa00; color: black; font-weight: 900; padding: 18px 30px; 
-      border: none; border-radius: 60px; font-size: 1.3rem; margin-top: 15px; cursor: pointer; width: 100%;
+
+    .image-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+      max-height: 140px;
+      overflow-y: auto;
+      padding: 6px;
+      background: #0a0a14;
+      border-radius: 20px;
+    }
+    .image-thumb {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .card-grid { grid-template-columns: 1fr; }
+      .banner { height: 160px; }
+      .whatsapp-float { bottom:20px; right:20px; width:60px; height:60px; font-size:1.7rem; }
     }
   </style>
 </head>
 <body>
-  <div id="app"></div>
 
-  <script>
-    // ==================== ENHANCED DATA ====================
-    let idList = [
-      { 
-        img: "https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=600&auto=format", 
-        level: 72, rank: "HEROIC", gunSkins: 48, charSkins: "Chrono, Alok, K", 
-        bundle: "Elite pass S24 + emote", 
-        description: "Rare account with 2 year old account, exclusive legendary skins, and diamond bundle.",
-        rareItems: ["Dj Alok", "Chrono", "SCAR Glacier", "Incubator"],
-        diamonds: 18500,
-        featured: true,
-        hot: true,
-        accountAge: "2 years",
-        paymentMethods: ["UPI", "Paytm"],
-        price: 2899, 
-        sold: false 
-      },
-      { 
-        img: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format", 
-        level: 65, rank: "GRANDMASTER", gunSkins: 37, charSkins: "Alok, Skyler, Hayato", 
-        bundle: "Legendary bundle + car skin", 
-        description: "Grandmaster rank, full DJ Alok setup, animated gun skins and rare vehicle.",
-        rareItems: ["Dj Alok", "Skyler", "MP40 Hellfire", "Cobra"],
-        diamonds: 9200,
-        featured: true,
-        hot: false,
-        accountAge: "1.5 years",
-        paymentMethods: ["UPI", "Paytm", "Card"],
-        price: 1999, 
-        sold: false 
-      },
-      { 
-        img: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=600&auto=format", 
-        level: 80, rank: "HEROIC", gunSkins: 62, charSkins: "All S-tier + Wukong", 
-        bundle: "Death Rider set + emote", 
-        description: "Fully loaded heroic account, 62 gun skins, all limited edition characters, includes emote pack.",
-        rareItems: ["Wukong", "Death Rider", "AK47 Blue Flame", "Elite Pass S23"],
-        diamonds: 34000,
-        featured: false,
-        hot: false,
-        accountAge: "3 years",
-        paymentMethods: ["UPI", "Paytm"],
-        price: 4450, 
-        sold: true 
-      },
-      { 
-        img: "https://images.unsplash.com/photo-1592155931584-901ac15763e3?w=600&auto=format", 
-        level: 43, rank: "DIAMOND", gunSkins: 22, charSkins: "Jota, Moco", 
-        bundle: "Gun bundle: SCAR/MP40", 
-        description: "Diamond rank, good starter account with rare Jota and Moco skins, perfect for pushing rank.",
-        rareItems: ["Jota", "SCAR Hellfire", "Moco"],
-        diamonds: 4300,
-        featured: false,
-        hot: true,
-        accountAge: "8 months",
-        paymentMethods: ["UPI"],
-        price: 1099, 
-        sold: false 
-      },
-      { 
-        img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format", 
-        level: 95, rank: "LEGENDARY", gunSkins: 120, charSkins: "All limited + DJ Alok", 
-        bundle: "Rare glacier + 2 lakh diamonds", 
-        description: "LEGENDARY ULTIMATE – 120 skins, glacier set, 2 lakh diamonds, all emotes, and rare pets.",
-        rareItems: ["Dj Alok", "Glacier Set", "Panda pet", "All emotes", "Dragon AK"],
-        diamonds: 200000,
-        featured: true,
-        hot: true,
-        accountAge: "4 years",
-        paymentMethods: ["UPI", "Paytm", "Bank Transfer"],
-        price: 75000, 
-        sold: false 
-      },
-      // new accounts
-      {
-        img: "https://images.unsplash.com/photo-1604866830893-13c2f4b5a97b?w=600&auto=format",
-        level: 58, rank: "GOLD", gunSkins: 31, charSkins: "Alok, Chrono",
-        bundle: "Elite Pass S22 + bundle",
-        description: "Gold account with good skins and rare emotes.",
-        rareItems: ["Alok", "Chrono", "MP5 Skull"],
-        diamonds: 6700,
-        featured: false,
-        hot: true,
-        accountAge: "1 year",
-        paymentMethods: ["UPI", "Paytm"],
-        price: 1599,
-        sold: false
+<div id="app"></div>
+
+<script>
+// ---------- DATA: MULTIPLE IMAGES PER ACCOUNT ----------
+let idList = [
+  { 
+    images: [
+      "https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=600&auto=format",
+      "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format",
+      "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=600&auto=format"
+    ],
+    level: 72, rank: "HEROIC", gunSkins: 48, charSkins: "Chrono, Alok, K", bundle: "Elite pass S24 + emote", description: "Rare account with 3 images – auto slide every 3 sec.", price: 2899, sold: false 
+  },
+  { 
+    images: [
+      "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format",
+      "https://images.unsplash.com/photo-1592155931584-901ac15763e3?w=600&auto=format"
+    ],
+    level: 65, rank: "GRANDMASTER", gunSkins: 37, charSkins: "Alok, Skyler, Hayato", bundle: "Legendary bundle + car skin", description: "Grandmaster rank, 2 images – slideshow.", price: 1999, sold: false 
+  },
+  { 
+    images: [
+      "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format"
+    ],
+    level: 95, rank: "LEGENDARY", gunSkins: 120, charSkins: "All limited + DJ Alok", bundle: "Rare glacier + 2 lakh diamonds", description: "LEGENDARY ULTIMATE – single image.", price: 75000, sold: false 
+  }
+];
+
+// ---------- SLIDESHOW ----------
+const slideshowIntervals = {};
+
+function startSlideshow(cardId, images) {
+  if (slideshowIntervals[cardId]) clearInterval(slideshowIntervals[cardId]);
+  if (!images || images.length <= 1) return;
+
+  let currentIdx = 0;
+  const slides = document.querySelectorAll(`#${cardId} .slide-img`);
+  const indicator = document.querySelector(`#${cardId} .slide-indicator`);
+
+  if (slides.length === 0) return;
+
+  slides.forEach((s, i) => {
+    if (i === 0) s.classList.add('active');
+    else s.classList.remove('active');
+  });
+  if (indicator) indicator.innerText = `1/${images.length}`;
+
+  slideshowIntervals[cardId] = setInterval(() => {
+    currentIdx = (currentIdx + 1) % images.length;
+    slides.forEach((s, i) => {
+      if (i === currentIdx) s.classList.add('active');
+      else s.classList.remove('active');
+    });
+    if (indicator) indicator.innerText = `${currentIdx+1}/${images.length}`;
+  }, 3000);
+}
+
+window.openImage = (url) => window.open(url, '_blank');
+
+// ---------- SORT STATE ----------
+let currentSort = 'none'; // 'price-asc', 'price-desc', 'level-asc', 'level-desc'
+
+// ---------- RENDER STORE WITH SORT & FILTER ----------
+function renderStore() {
+  const maxPrice = parseInt(document.getElementById('priceSlider')?.value) || 100000;
+  let filtered = idList.filter(id => id.price >= 500 && id.price <= maxPrice);
+
+  // apply sort
+  if (currentSort === 'price-asc') {
+    filtered.sort((a,b) => a.price - b.price);
+  } else if (currentSort === 'price-desc') {
+    filtered.sort((a,b) => b.price - a.price);
+  } else if (currentSort === 'level-asc') {
+    filtered.sort((a,b) => a.level - b.level);
+  } else if (currentSort === 'level-desc') {
+    filtered.sort((a,b) => b.level - a.level);
+  }
+
+  const container = document.getElementById('idCardContainer');
+  if (!container) return;
+  container.innerHTML = '';
+
+  filtered.forEach((item, idx) => {
+    const globalIdx = idList.findIndex(x => x.images[0] === item.images[0] && x.price === item.price);
+    const cardId = `card-${Date.now()}-${idx}-${Math.random()}`;
+
+    const card = document.createElement('div');
+    card.className = 'id-card';
+    card.id = cardId;
+
+    if (item.sold) {
+      const badge = document.createElement('div');
+      badge.className = 'sold-badge';
+      badge.textContent = 'SOLD';
+      card.appendChild(badge);
+    }
+
+    // build slides
+    let slidesHtml = '';
+    item.images.forEach((img, i) => {
+      slidesHtml += `<img class="slide-img ${i === 0 ? 'active' : ''}" src="${img}" onclick="openImage('${img}')" onerror="this.src='https://placehold.co/600x400/1a1a24/00d4ff?text=NO+IMAGE'">`;
+    });
+
+    card.innerHTML = `
+      <div class="img-wrapper">
+        <div class="slideshow-container">
+          ${slidesHtml}
+          ${item.images.length > 1 ? `<span class="slide-indicator">1/${item.images.length}</span>` : ''}
+        </div>
+      </div>
+      <div class="card-content">
+        <div class="id-stats">
+          <div class="stat-item"><i class="fa-solid fa-level-up"></i> Lv ${item.level}</div>
+          <div class="stat-item"><i class="fa-solid fa-trophy"></i> ${item.rank}</div>
+          <div class="stat-item"><i class="fa-solid fa-gun"></i> ${item.gunSkins}</div>
+          <div class="stat-item"><i class="fa-solid fa-user"></i> ${item.charSkins.split(',').length}</div>
+        </div>
+        <p><strong>Chars:</strong> ${item.charSkins}</p>
+        <p><strong>Bundle:</strong> ${item.bundle}</p>
+        <div class="description-box">${item.description}</div>
+        <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
+        <div class="btn-group">
+          <button class="btn btn-whatsapp" onclick="buyNow(${globalIdx})" ${item.sold?'disabled':''}>
+            <i class="fa-brands fa-whatsapp"></i> BUY NOW
+          </button>
+          <button class="btn btn-chat" onclick="chatNow(${globalIdx})" ${item.sold?'disabled':''}>
+            <i class="fa-brands fa-whatsapp"></i> CHAT
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+
+    if (item.images.length > 1) {
+      setTimeout(() => startSlideshow(cardId, item.images), 150);
+    }
+  });
+}
+
+// ---------- SORT HANDLER ----------
+function setSort(type) {
+  currentSort = type;
+  // update active button style
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    if (btn.dataset.sort === type) btn.classList.add('active');
+    else btn.classList.remove('active');
+  });
+  renderStore();
+}
+
+// ---------- BUY/CHAT ----------
+window.buyNow = (idx) => {
+  if (idx === -1 || idx >= idList.length) return;
+  const p = idList[idx];
+  if (p.sold) return;
+  const msg = `🛒 *NEW ORDER*%0a*Level:* ${p.level} *Rank:* ${p.rank}%0a*Skins:* ${p.gunSkins}%0a*Chars:* ${p.charSkins}%0a*Bundle:* ${p.bundle}%0a*Desc:* ${p.description}%0a*Price:* ₹${p.price}%0a--- Buyer info ---`;
+  window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+window.chatNow = (idx) => {
+  if (idx === -1 || idx >= idList.length) return;
+  const p = idList[idx];
+  window.open(`https://wa.me/917619643039?text=Hi, I'm interested in ID: Level ${p.level} ${p.rank} (₹${p.price})`, '_blank');
+};
+
+// ---------- ADMIN FUNCTIONS ----------
+window.handleImageUpload = (input, index) => {
+  const files = Array.from(input.files);
+  if (files.length === 0) return;
+
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      idList[index].images.push(e.target.result);
+      refreshAfterAdmin();
+    };
+    reader.readAsDataURL(file);
+  });
+};
+
+window.addImageToId = (idx) => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.multiple = true;
+  input.style.display = 'none';
+  input.onchange = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+    let loaded = 0;
+    files.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        idList[idx].images.push(ev.target.result);
+        loaded++;
+        if (loaded === files.length) refreshAfterAdmin();
+      };
+      reader.readAsDataURL(file);
+    });
+    document.body.removeChild(input);
+  };
+  document.body.appendChild(input);
+  input.click();
+};
+
+function renderAdminPanel() {
+  const content = document.getElementById('adminContent');
+  if (!content) return;
+  content.innerHTML = '';
+
+  idList.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'admin-card';
+
+    let thumbs = '';
+    item.images.forEach((img, imgIdx) => {
+      thumbs += `<img class="image-thumb" src="${img}" onclick="openImage('${img}')" title="Image ${imgIdx+1}">`;
+    });
+
+    card.innerHTML = `
+      <h3 style="display:flex; justify-content:space-between;">
+        ID #${i+1}
+        <button class="file-upload-btn" style="width:auto; padding:0.4rem 1rem; margin:0;" onclick="addImageToId(${i})">➕ ADD IMAGE</button>
+      </h3>
+      <div class="image-list">${thumbs || '<span style="color:var(--text-muted);">No images</span>'}</div>
+
+      <input type="file" id="file${i}" accept="image/*" multiple style="display:none" onchange="handleImageUpload(this, ${i})">
+      
+      <input id="level${i}"   value="${item.level}"       placeholder="Level">
+      <input id="rank${i}"    value="${item.rank}"        placeholder="Rank">
+      <input id="gunSkins${i}" value="${item.gunSkins}"   placeholder="Gun Skins">
+      <input id="charSkins${i}" value="${item.charSkins}" placeholder="Characters">
+      <input id="bundle${i}"  value="${item.bundle}"      placeholder="Bundle">
+      <textarea id="desc${i}"  placeholder="Description">${item.description}</textarea>
+      <input id="price${i}"   value="${item.price}"       placeholder="Price (₹)">
+
+      <div style="margin:1.2rem 0;">
+        <label><input type="checkbox" id="sold${i}" ${item.sold ? 'checked' : ''}> Sold</label>
+      </div>
+
+      <button style="background:var(--accent);color:#000;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;margin-right:0.8rem;" onclick="updateId(${i})">💾 SAVE</button>
+      <button style="background:var(--danger);color:white;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;" onclick="deleteId(${i})">🗑 DELETE</button>
+    `;
+    content.appendChild(card);
+  });
+
+  const addBtn = document.createElement('button');
+  addBtn.textContent = '+ ADD NEW ACCOUNT (upload first image)';
+  addBtn.style.cssText = 'width:100%; padding:1.2rem; background:var(--success); color:#000; border:none; border-radius:999px; font-weight:700; font-size:1.1rem; margin:1.8rem 0; cursor:pointer;';
+  addBtn.onclick = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.style.display = 'none';
+    input.onchange = e => {
+      const files = Array.from(e.target.files);
+      if (files.length === 0) return;
+      let newImages = [];
+      let loaded = 0;
+      files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = ev => {
+          newImages.push(ev.target.result);
+          loaded++;
+          if (loaded === files.length) {
+            idList.push({
+              images: newImages,
+              level: 60,
+              rank: "HEROIC",
+              gunSkins: 25,
+              charSkins: "New Character",
+              bundle: "New Bundle",
+              description: "Fresh account – edit details",
+              price: 1999,
+              sold: false
+            });
+            refreshAfterAdmin();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+      document.body.removeChild(input);
+    };
+    document.body.appendChild(input);
+    input.click();
+  };
+  content.appendChild(addBtn);
+}
+
+window.updateId = (idx) => {
+  idList[idx] = {
+    images: idList[idx].images, // preserve images
+    level: parseInt(document.getElementById(`level${idx}`).value) || 0,
+    rank: document.getElementById(`rank${idx}`).value || "",
+    gunSkins: parseInt(document.getElementById(`gunSkins${idx}`).value) || 0,
+    charSkins: document.getElementById(`charSkins${idx}`).value || "",
+    bundle: document.getElementById(`bundle${idx}`).value || "",
+    description: document.getElementById(`desc${idx}`).value || "",
+    price: parseInt(document.getElementById(`price${idx}`).value) || 0,
+    sold: document.getElementById(`sold${idx}`).checked
+  };
+  refreshAfterAdmin();
+};
+
+window.deleteId = (idx) => {
+  if (confirm("Delete this account?")) {
+    idList.splice(idx, 1);
+    refreshAfterAdmin();
+  }
+};
+
+function refreshAfterAdmin() {
+  renderAdminPanel();
+  if (document.getElementById('idCardContainer')) renderStore();
+}
+
+// ---------- ROUTER ----------
+function loadApp() {
+  const isAdmin = window.location.pathname.includes('/admin');
+  const app = document.getElementById('app');
+
+  if (isAdmin) {
+    app.innerHTML = `
+      <div class="admin-login-container">
+        <h2 style="color:var(--accent); margin-bottom:2rem; text-align:center;">ADMIN LOGIN</h2>
+        <input type="password" id="adminPass" placeholder="Password">
+        <button onclick="checkAdmin()" style="width:100%; padding:1.2rem; margin-top:1.2rem; background:var(--accent); color:#000; border:none; border-radius:999px; font-size:1.1rem; font-weight:700; cursor:pointer;">LOGIN</button>
+        <div id="loginError" style="color:var(--danger); margin-top:1.2rem; text-align:center;"></div>
+        <p style="margin-top:1.8rem; color:var(--text-muted); text-align:center;">password: admin123</p>
+      </div>
+    `;
+
+    window.checkAdmin = () => {
+      if (document.getElementById('adminPass').value === 'admin123') {
+        showAdminPanel();
+      } else {
+        document.getElementById('loginError').textContent = 'Wrong password';
       }
-    ];
-
-    // ==================== STATE ====================
-    let currentSlideIndex = 0;
-    let slideInterval;
-    let filters = {
-      rank: 'ALL',
-      minPrice: 500,
-      maxPrice: 100000,
-      minDiamonds: 0,
-      hasAlok: false,
-      hasWukong: false,
-      sortBy: 'newest'
     };
 
-    // ==================== CAROUSEL ====================
-    function startCarousel() {
-      const cards = document.querySelectorAll('.id-card:not(.sold-card)');
-      if (cards.length <= 1) return;
-      cards.forEach((card, i) => card.style.display = i === 0 ? 'flex' : 'none');
-      clearInterval(slideInterval);
-      slideInterval = setInterval(() => {
-        const visibleCards = Array.from(document.querySelectorAll('.id-card')).filter(c => c.style.display !== 'none');
-        if (visibleCards.length === 0) return;
-        const currentIndex = visibleCards.findIndex(c => c.style.display === 'flex');
-        if (currentIndex !== -1) visibleCards[currentIndex].style.display = 'none';
-        const nextIndex = (currentIndex + 1) % visibleCards.length;
-        visibleCards[nextIndex].style.display = 'flex';
-      }, 4000);
-    }
-
-    function stopCarousel() { clearInterval(slideInterval); }
-
-    // ==================== FILTER FUNCTIONS ====================
-    function filterAccounts() {
-      return idList.filter(id => {
-        if (id.sold) return false;
-        
-        // price filter
-        if (id.price < filters.minPrice || id.price > filters.maxPrice) return false;
-        
-        // rank filter
-        if (filters.rank !== 'ALL' && id.rank !== filters.rank) return false;
-        
-        // diamonds filter
-        if (id.diamonds < filters.minDiamonds) return false;
-        
-        // character filters
-        if (filters.hasAlok && !id.charSkins.includes('Alok') && !id.rareItems.includes('Dj Alok')) return false;
-        if (filters.hasWukong && !id.charSkins.includes('Wukong') && !id.rareItems.includes('Wukong')) return false;
-        
-        return true;
-      }).sort((a, b) => {
-        if (filters.sortBy === 'priceLow') return a.price - b.price;
-        if (filters.sortBy === 'priceHigh') return b.price - a.price;
-        if (filters.sortBy === 'diamonds') return b.diamonds - a.diamonds;
-        return 0; // newest (default)
-      });
-    }
-
-    // ==================== RENDER FUNCTIONS ====================
-    function renderFeatured() {
-      const container = document.getElementById('featuredContainer');
-      if (!container) return;
-      const featured = idList.filter(id => id.featured && !id.sold).slice(0, 3);
-      container.innerHTML = '';
-      featured.forEach(id => {
-        const globalIdx = idList.indexOf(id);
-        container.appendChild(createCardElement(id, globalIdx, true));
-      });
-    }
-
-    function createCardElement(id, globalIdx, isFeatured = false) {
-      const card = document.createElement('div');
-      card.className = 'id-card';
-      if (id.sold) card.classList.add('sold-card');
-      
-      // badges
-      if (id.sold) {
-        const badge = document.createElement('div');
-        badge.className = 'sold-badge'; badge.textContent = 'SOLD OUT';
-        card.appendChild(badge);
-      } else if (id.hot) {
-        const hotBadge = document.createElement('div');
-        hotBadge.className = 'hot-badge'; hotBadge.textContent = '🔥 HOT DEAL';
-        card.appendChild(hotBadge);
-      }
-      
-      if (isFeatured) {
-        const feat = document.createElement('div');
-        feat.className = 'hot-badge'; feat.style.left = '12px'; feat.style.background = '#ffaa00'; feat.textContent = '⭐ FEATURED';
-        card.appendChild(feat);
-      }
-
-      card.innerHTML += `
-        <div class="img-wrapper" onclick="openImage('${id.img}')">
-          <img src="${id.img}" onerror="this.src='https://placehold.co/600x400/222/ccc?text=FF+ID'">
-        </div>
-        <div class="card-content">
-          <div class="id-stats">
-            <div class="stat-item"><i class="fa-solid fa-star"></i> Lv.${id.level}</div>
-            <div class="stat-item"><i class="fa-solid fa-trophy"></i> ${id.rank}</div>
-            <div class="stat-item"><i class="fa-solid fa-gun"></i> ${id.gunSkins}</div>
-            <div class="stat-item"><i class="fa-regular fa-gem"></i> ${id.diamonds}💎</div>
+    function showAdminPanel() {
+      app.innerHTML = `
+        <div class="container">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin:2.5rem 0 1.5rem;">
+            <div class="owner-tag"><i class="fa-solid fa-crown"></i> ADMIN PANEL</div>
+            <button onclick="window.location.href='/'" style="background:#333; color:white; padding:0.8rem 1.6rem; border:1px solid var(--accent); border-radius:999px; cursor:pointer;">← BACK TO STORE</button>
           </div>
-          <div class="rare-tags">${id.rareItems.map(r => `<span class="rare-tag">${r}</span>`).join('')}</div>
-          <p><i class="fa-solid fa-id-card"></i> ${id.charSkins}</p>
-          <p><i class="fa-solid fa-gift"></i> ${id.bundle}</p>
-          <div class="description-box">📝 ${id.description}</div>
-          <div class="price"><small>₹</small>${id.price.toLocaleString()}</div>
-          <div class="btn-group">
-            <button class="btn btn-neon" onclick="buyNow(${globalIdx})" ${id.sold ? 'disabled' : ''}><i class="fa-brands fa-whatsapp"></i> BUY</button>
-            <button class="btn btn-outline" onclick="chatNow(${globalIdx})" ${id.sold ? 'disabled' : ''}><i class="fa-brands fa-whatsapp"></i> CHAT</button>
+          <div class="admin-panel">
+            <h2 style="color:var(--accent); margin-bottom:1.5rem;">Manage Accounts</h2>
+            <div id="adminContent"></div>
           </div>
         </div>
       `;
-      return card;
-    }
-
-    function renderStore() {
-      stopCarousel();
-      const filtered = filterAccounts();
-      const container = document.getElementById('idCardContainer');
-      if (!container) return;
-      container.innerHTML = '';
-
-      filtered.forEach(id => {
-        const globalIdx = idList.indexOf(id);
-        container.appendChild(createCardElement(id, globalIdx, false));
-      });
-
-      if (filtered.length > 0) {
-        document.querySelectorAll('.id-card').forEach((c, i) => c.style.display = i === 0 ? 'flex' : 'none');
-        startCarousel();
-      }
-    }
-
-    // ==================== ACTIONS ====================
-    window.openImage = (url) => window.open(url, '_blank');
-
-    window.buyNow = idx => {
-      if (idx < 0 || idx >= idList.length || idList[idx].sold) return;
-      const p = idList[idx];
-      const msg = `🛒 *NEW ORDER - BLACK TEMPLE*%0a` +
-        `*Level:* ${p.level} *Rank:* ${p.rank}%0a` +
-        `*Skins:* ${p.gunSkins}%0a` +
-        `*Diamonds:* ${p.diamonds}%0a` +
-        `*Rare:* ${p.rareItems.join(', ')}%0a` +
-        `*Price:* ₹${p.price}%0a` +
-        `--- Buyer Info ---`;
-      window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
-    };
-
-    window.chatNow = idx => {
-      if (idx < 0 || idx >= idList.length) return;
-      const p = idList[idx];
-      window.open(`https://wa.me/917619643039?text=Hi%2C%20interested%20in%20Lv${p.level}%20${p.rank}%20₹${p.price}`, '_blank');
-    };
-
-    // ==================== ULTIMATE ADMIN ====================
-    function renderAdminPanel() {
-      const content = document.getElementById('adminContent');
-      if (!content) return;
-      content.innerHTML = '';
-
-      idList.forEach((item, i) => {
-        const card = document.createElement('div');
-        card.className = 'admin-card';
-        card.innerHTML = `
-          <h3 style="color:#ffaa00; margin-bottom:15px;">🔹 ID #${i+1} ${item.sold ? '(SOLD)' : ''}</h3>
-          
-          <img id="preview${i}" src="${item.img}" style="width:100%; max-height:150px; object-fit:cover; border-radius:25px; border:3px solid #ffaa00; margin-bottom:15px;">
-          
-          <input type="file" id="file${i}" accept="image/*" style="display:none" onchange="handleImageUpload(this,${i})">
-          <button class="btn-small" style="width:100%; margin-bottom:15px;" onclick="document.getElementById('file${i}').click()">📸 CHANGE IMAGE</button>
-          <input type="hidden" id="img${i}" value="${item.img}">
-          
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <input type="number" id="level${i}" value="${item.level}" placeholder="Level">
-            <input type="text" id="rank${i}" value="${item.rank}" placeholder="Rank">
-          </div>
-          
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <input type="number" id="gunSkins${i}" value="${item.gunSkins}" placeholder="Gun Skins">
-            <input type="number" id="diamonds${i}" value="${item.diamonds}" placeholder="Diamonds">
-          </div>
-          
-          <input type="text" id="charSkins${i}" value="${item.charSkins}" placeholder="Characters (comma)">
-          <input type="text" id="bundle${i}" value="${item.bundle}" placeholder="Bundle">
-          <textarea id="desc${i}" placeholder="Description">${item.description}</textarea>
-          
-          <input type="text" id="rareItems${i}" value="${item.rareItems.join(', ')}" placeholder="Rare items (comma)">
-          <input type="text" id="accountAge${i}" value="${item.accountAge || ''}" placeholder="Account Age">
-          
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-            <input type="number" id="price${i}" value="${item.price}" placeholder="Price ₹">
-          </div>
-          
-          <div style="display:flex; gap:15px; margin:15px 0; flex-wrap:wrap;">
-            <label><input type="checkbox" id="sold${i}" ${item.sold ? 'checked' : ''}> Sold</label>
-            <label><input type="checkbox" id="featured${i}" ${item.featured ? 'checked' : ''}> Featured</label>
-            <label><input type="checkbox" id="hot${i}" ${item.hot ? 'checked' : ''}> Hot Deal</label>
-          </div>
-          
-          <div style="display:flex; gap:10px;">
-            <button class="btn-small" onclick="updateId(${i})" style="flex:2;">💾 SAVE CHANGES</button>
-            <button class="btn-small" style="background:#c0392b; flex:1;" onclick="deleteId(${i})">🗑️ DELETE</button>
-          </div>
-        `;
-        content.appendChild(card);
-      });
-
-      // Add new account button
-      const addDiv = document.createElement('div');
-      addDiv.style.gridColumn = '1 / -1';
-      addDiv.style.textAlign = 'center';
-      addDiv.style.marginTop = '20px';
-      
-      const addBtn = document.createElement('button');
-      addBtn.className = 'btn-small';
-      addBtn.style.background = '#27ae60';
-      addBtn.style.padding = '18px 35px';
-      addBtn.style.fontSize = '1.1rem';
-      addBtn.innerHTML = '➕ CREATE NEW ACCOUNT (SELECT IMAGE)';
-      addBtn.onclick = () => {
-        const inp = document.createElement('input');
-        inp.type = 'file'; inp.accept = 'image/*';
-        inp.onchange = e => {
-          const file = e.target.files[0];
-          if (!file) return;
-          const reader = new FileReader();
-          reader.onload = ev => {
-            idList.push({
-              img: ev.target.result,
-              level: 1,
-              rank: "BRONZE",
-              gunSkins: 0,
-              charSkins: "",
-              bundle: "",
-              description: "New account - edit me",
-              rareItems: [],
-              diamonds: 0,
-              featured: false,
-              hot: false,
-              accountAge: "New",
-              paymentMethods: ["UPI"],
-              price: 999,
-              sold: false
-            });
-            renderAdminPanel();
-            if (document.getElementById('idCardContainer')) {
-              renderFeatured();
-              renderStore();
-            }
-          };
-          reader.readAsDataURL(file);
-        };
-        inp.click();
-      };
-      addDiv.appendChild(addBtn);
-      content.appendChild(addDiv);
-    }
-
-    window.handleImageUpload = (input, index) => {
-      const file = input.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = e => {
-        idList[index].img = e.target.result;
-        document.getElementById(`preview${index}`).src = e.target.result;
-        document.getElementById(`img${index}`).value = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    };
-
-    window.updateId = i => {
-      idList[i] = {
-        img: document.getElementById(`img${i}`).value || document.getElementById(`preview${i}`).src,
-        level: parseInt(document.getElementById(`level${i}`).value) || 1,
-        rank: document.getElementById(`rank${i}`).value || "BRONZE",
-        gunSkins: parseInt(document.getElementById(`gunSkins${i}`).value) || 0,
-        diamonds: parseInt(document.getElementById(`diamonds${i}`).value) || 0,
-        charSkins: document.getElementById(`charSkins${i}`).value || "",
-        bundle: document.getElementById(`bundle${i}`).value || "",
-        description: document.getElementById(`desc${i}`).value || "",
-        rareItems: document.getElementById(`rareItems${i}`).value.split(',').map(s => s.trim()).filter(s => s),
-        accountAge: document.getElementById(`accountAge${i}`).value || "",
-        price: parseInt(document.getElementById(`price${i}`).value) || 0,
-        sold: document.getElementById(`sold${i}`).checked,
-        featured: document.getElementById(`featured${i}`).checked,
-        hot: document.getElementById(`hot${i}`).checked,
-        paymentMethods: ["UPI", "Paytm"] // default
-      };
-      
-      // Update all views
       renderAdminPanel();
-      if (document.getElementById('idCardContainer')) {
-        renderFeatured();
-        renderStore();
-      }
-    };
-
-    window.deleteId = i => {
-      if (!confirm(`⚠️ Permanently delete ID #${i+1}?`)) return;
-      idList.splice(i, 1);
-      renderAdminPanel();
-      if (document.getElementById('idCardContainer')) {
-        renderFeatured();
-        renderStore();
-      }
-    };
-
-    // ==================== ROUTER ====================
-    function loadApp() {
-      const path = window.location.pathname;
-      const app = document.getElementById('app');
-
-      // Simple visitor counter
-      const visitorCount = Math.floor(Math.random() * 30) + 15;
-
-      if (path.includes('/admin')) {
-        // Admin login
-        app.innerHTML = `
-          <div class="admin-login-container">
-            <h2>🔐 ADMIN</h2>
-            <input type="password" id="adminPass" placeholder="Enter password">
-            <button onclick="checkAdmin()">ACCESS PANEL</button>
-            <div id="loginError" style="color:#ff6666; margin-top:15px;"></div>
-            <p style="margin-top:25px; color:#aaa;">🔑 hint: admin123</p>
-          </div>
-        `;
-        
-        window.checkAdmin = () => {
-          if (document.getElementById('adminPass').value === 'admin123') {
-            app.innerHTML = `
-              <div class="container">
-                <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
-                  <div class="owner-tag"><i class="fa-solid fa-crown"></i> ADMIN DASHBOARD</div>
-                  <button class="btn-small" style="background:#444;" onclick="window.location.href='/'">← BACK TO STORE</button>
-                </div>
-                <div class="admin-panel">
-                  <div class="admin-title"><i class="fa-solid fa-gears"></i> MANAGE INVENTORY (${idList.length} IDs)</div>
-                  <div class="admin-content" id="adminContent"></div>
-                </div>
-              </div>
-            `;
-            renderAdminPanel();
-          } else {
-            document.getElementById('loginError').textContent = '❌ Incorrect password';
-          }
-        };
-      } else {
-        // Main store
-        app.innerHTML = `
-          <div class="container">
-            <div class="header">
-              <div class="logo"><span>BLACK</span><span>◊</span><span>TEMPLE</span><span>FF</span></div>
-              <div class="visitor-counter"><i class="fa-solid fa-eye"></i> ${visitorCount} online</div>
-            </div>
-            
-            <div class="owner-tag"><i class="fa-solid fa-crown"></i> OWNER BT RAI · 7+ YEARS TRUSTED</div>
-            
-            <div class="banner">
-              <div class="banner-overlay">
-                <h1>⚡ FREE FIRE ACCOUNTS ⚡</h1>
-                <p>#1 TRUSTED STORE INDIA · INSTANT DELIVERY</p>
-              </div>
-            </div>
-            
-            <!-- TRUST BADGES -->
-            <div class="trust-badges">
-              <div class="badge-item"><i class="fa-solid fa-bolt"></i> 5 MIN DELIVERY</div>
-              <div class="badge-item"><i class="fa-solid fa-shield-halved"></i> SECURE CHAT</div>
-              <div class="badge-item"><i class="fa-solid fa-indian-rupee-sign"></i> UPI/PAYTM</div>
-              <div class="badge-item"><i class="fa-solid fa-clock"></i> 24/7 SUPPORT</div>
-            </div>
-            
-            <!-- FEATURED SECTION -->
-            <h2 class="section-title"><i class="fa-solid fa-star"></i> FEATURED ACCOUNTS</h2>
-            <div class="featured-grid" id="featuredContainer"></div>
-            
-            <!-- ADVANCED FILTERS -->
-            <div class="filter-wrapper">
-              <div class="filter-row">
-                <div class="filter-group">
-                  <label><i class="fa-solid fa-filter"></i> RANK</label>
-                  <select id="rankSelect">
-                    <option value="ALL">All Ranks</option>
-                    <option value="BRONZE">Bronze</option>
-                    <option value="SILVER">Silver</option>
-                    <option value="GOLD">Gold</option>
-                    <option value="DIAMOND">Diamond</option>
-                    <option value="HEROIC">Heroic</option>
-                    <option value="GRANDMASTER">Grandmaster</option>
-                    <option value="LEGENDARY">Legendary</option>
-                  </select>
-                </div>
-                
-                <div class="filter-group">
-                  <label><i class="fa-solid fa-gem"></i> MIN DIAMONDS</label>
-                  <select id="diamondSelect">
-                    <option value="0">Any</option>
-                    <option value="5000">5k+</option>
-                    <option value="10000">10k+</option>
-                    <option value="20000">20k+</option>
-                    <option value="50000">50k+</option>
-                  </select>
-                </div>
-                
-                <div class="filter-group">
-                  <label><i class="fa-solid fa-sort"></i> SORT BY</label>
-                  <select id="sortSelect">
-                    <option value="newest">Newest</option>
-                    <option value="priceLow">Price: Low to High</option>
-                    <option value="priceHigh">Price: High to Low</option>
-                    <option value="diamonds">Most Diamonds</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div class="filter-row" style="margin-top:15px;">
-                <div class="filter-group" style="display:flex; gap:20px; align-items:center;">
-                  <label><input type="checkbox" id="alokFilter"> Has DJ Alok</label>
-                  <label><input type="checkbox" id="wukongFilter"> Has Wukong</label>
-                </div>
-              </div>
-              
-              <div class="price-slider-container">
-                <div style="display:flex; justify-content:space-between; color:#ffaa00; font-weight:700;">
-                  <span>MIN ₹500</span>
-                  <span>MAX ₹1,00,000</span>
-                </div>
-                <input type="range" min="500" max="100000" value="100000" step="500" class="price-slider" id="priceSlider">
-                <div class="price-value" id="priceDisplay">CURRENT: ₹1,00,000</div>
-              </div>
-              
-              <div class="rank-filter" id="rankChips">
-                <span class="rank-chip active" data-rank="ALL">ALL</span>
-                <span class="rank-chip" data-rank="BRONZE">BRONZE</span>
-                <span class="rank-chip" data-rank="SILVER">SILVER</span>
-                <span class="rank-chip" data-rank="GOLD">GOLD</span>
-                <span class="rank-chip" data-rank="DIAMOND">DIAMOND</span>
-                <span class="rank-chip" data-rank="HEROIC">HEROIC</span>
-                <span class="rank-chip" data-rank="GRANDMASTER">GRANDMASTER</span>
-                <span class="rank-chip" data-rank="LEGENDARY">LEGENDARY</span>
-              </div>
-            </div>
-            
-            <!-- MAIN ID GRID -->
-            <h2 class="section-title"><i class="fa-solid fa-cards"></i> AVAILABLE ACCOUNTS</h2>
-            <div class="card-grid" id="idCardContainer"></div>
-            
-            <!-- TESTIMONIALS -->
-            <h2 class="section-title"><i class="fa-solid fa-comment"></i> WHAT BUYERS SAY</h2>
-            <div class="testimonial-grid">
-              <div class="testimonial-card">
-                <div class="testimonial-author"><i class="fa-solid fa-circle-user"></i> @rajput_gamer</div>
-                <p>"Bought a legendary account, got login within 2 minutes. 100% legit."</p>
-                <div style="color:#ffaa00;">★★★★★</div>
-              </div>
-              <div class="testimonial-card">
-                <div class="testimonial-author"><i class="fa-solid fa-circle-user"></i> @neha_ff</div>
-                <p>"Best prices and genuine accounts. My go-to store for Free Fire IDs."</p>
-                <div style="color:#ffaa00;">★★★★★</div>
-              </div>
-              <div class="testimonial-card">
-                <div class="testimonial-author"><i class="fa-solid fa-circle-user"></i> @akash_yt</div>
-                <p>"Smooth transaction and great support. Highly recommended!"</p>
-                <div style="color:#ffaa00;">★★★★★</div>
-              </div>
-            </div>
-            
-            <!-- FAQ SECTION -->
-            <h2 class="section-title"><i class="fa-solid fa-circle-question"></i> QUICK ANSWERS</h2>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin:20px 0;">
-              <div class="testimonial-card">
-                <h4 style="color:#ffaa00;">🔸 How to buy?</h4>
-                <p>Click BUY button, chat on WhatsApp, make payment via UPI, receive credentials instantly.</p>
-              </div>
-              <div class="testimonial-card">
-                <h4 style="color:#ffaa00;">🔸 Is it safe?</h4>
-                <p>100% safe. We provide original email access or help you change details.</p>
-              </div>
-            </div>
-            
-            <!-- CONTACT SECTION -->
-            <h2 class="section-title"><i class="fa-solid fa-address-card"></i> DIRECT CONTACT</h2>
-            <div class="contact-section">
-              <div class="contact-grid">
-                <div><i class="fa-solid fa-phone" style="color:#ffaa00;"></i> <strong>+91 7619643039</strong></div>
-                <div><i class="fa-regular fa-envelope" style="color:#ffaa00;"></i> btraitrustdeal@gmail.com</div>
-                <div><i class="fa-brands fa-instagram" style="color:#ffaa00;"></i> black_temple_official_</div>
-                <div><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> 24/7 WhatsApp</div>
-              </div>
-            </div>
-          </div>
-          
-          <footer class="footer-black">
-            <div class="footer-grid">
-              <div class="footer-item"><i class="fa-solid fa-phone"></i> <a href="tel:+917619643039">+91 7619643039</a></div>
-              <div class="footer-item"><i class="fa-regular fa-envelope"></i> <a href="mailto:btraitrustdeal@gmail.com">btraitrustdeal</a></div>
-              <div class="footer-item"><i class="fa-brands fa-instagram"></i> <a href="#">@black_temple</a></div>
-            </div>
-            <div style="text-align:center; margin-top:25px; color:#aaa;">©️ BLACK TEMPLE STORE · ALL RIGHTS RESERVED · INDIA</div>
-          </footer>
-          
-          <a href="https://wa.me/917619643039" class="whatsapp-float" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-        `;
-
-        // Initialize filter controls
-        const slider = document.getElementById('priceSlider');
-        const display = document.getElementById('priceDisplay');
-        const rankSelect = document.getElementById('rankSelect');
-        const diamondSelect = document.getElementById('diamondSelect');
-        const sortSelect = document.getElementById('sortSelect');
-        const alokFilter = document.getElementById('alokFilter');
-        const wukongFilter = document.getElementById('wukongFilter');
-
-        function updateFiltersAndRender() {
-          filters.rank = rankSelect.value;
-          filters.minDiamonds = parseInt(diamondSelect.value) || 0;
-          filters.sortBy = sortSelect.value;
-          filters.hasAlok = alokFilter.checked;
-          filters.hasWukong = wukongFilter.checked;
-          
-          // update rank chips
-          document.querySelectorAll('.rank-chip').forEach(chip => {
-            chip.classList.toggle('active', chip.dataset.rank === filters.rank);
-          });
-          
-          renderStore();
-        }
-
-        if (slider && display) {
-          slider.oninput = () => {
-            filters.maxPrice = Number(slider.value);
-            display.textContent = `CURRENT: ₹${filters.maxPrice.toLocaleString()}`;
-            updateFiltersAndRender();
-          };
-        }
-
-        rankSelect.onchange = updateFiltersAndRender;
-        diamondSelect.onchange = updateFiltersAndRender;
-        sortSelect.onchange = updateFiltersAndRender;
-        alokFilter.onchange = updateFiltersAndRender;
-        wukongFilter.onchange = updateFiltersAndRender;
-
-        // rank chips click
-        document.querySelectorAll('.rank-chip').forEach(chip => {
-          chip.onclick = () => {
-            filters.rank = chip.dataset.rank;
-            rankSelect.value = filters.rank;
-            updateFiltersAndRender();
-          };
-        });
-
-        renderFeatured();
-        renderStore();
-      }
     }
+  } else {
+    // MAIN STORE
+    app.innerHTML = `
+      <div class="container">
+        <div class="header">
+          <div class="logo">BLACK TEMPLE</div>
+          <div class="owner-tag"><i class="fa-solid fa-crown"></i> BT RAI · ALL INDIA TRUSTED</div>
+        </div>
 
-    window.onload = loadApp;
-  </script>
+        <div class="banner">
+          <div class="banner-content">
+            <h1>MULTI‑IMAGE · AUTO SLIDE</h1>
+            <p style="margin-top:0.7rem;">⭐ ALL INDIA TRUSTED DEALER ⭐</p>
+          </div>
+        </div>
+
+        <div class="filter-sort-bar">
+          <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem; font-weight:600;">
+            <span>₹500</span>
+            <span id="priceDisplay">₹100,000</span>
+          </div>
+          <input type="range" min="500" max="100000" value="100000" step="500" id="priceSlider" class="price-slider">
+
+          <div class="sort-buttons">
+            <button class="sort-btn" data-sort="price-asc" onclick="setSort('price-asc')">💰 Price ↓</button>
+            <button class="sort-btn" data-sort="price-desc" onclick="setSort('price-desc')">💰 Price ↑</button>
+            <button class="sort-btn" data-sort="level-asc" onclick="setSort('level-asc')">📊 Level ↓</button>
+            <button class="sort-btn" data-sort="level-desc" onclick="setSort('level-desc')">📊 Level ↑</button>
+            <button class="sort-btn" data-sort="none" onclick="setSort('none')">✕ Reset</button>
+          </div>
+        </div>
+
+        <h2 class="section-title">⚡ ACCOUNTS · 3s AUTO SLIDE</h2>
+        <div class="card-grid" id="idCardContainer"></div>
+
+        <h2 class="section-title">📞 CONTACT</h2>
+        <div style="background:rgba(20,20,40,0.6); backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:20px; padding:2rem; margin:2rem 0;">
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; text-align:center;">
+            <div><i class="fa-solid fa-phone-volume" style="font-size:2rem;color:var(--accent);"></i><br>+91 76196 43039</div>
+            <div><i class="fa-solid fa-envelope" style="font-size:2rem;color:var(--accent);"></i><br>btraitrustdeal@gmail.com</div>
+            <div><i class="fa-brands fa-instagram" style="font-size:2rem;color:var(--accent);"></i><br>@black_temple_official_</div>
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer-black">
+        <div class="footer-grid">
+          <div class="footer-item"><i class="fa-solid fa-phone"></i><br><a href="tel:+917619643039" style="color:var(--text);text-decoration:none;">+91 7619643039</a></div>
+          <div class="footer-item"><i class="fa-solid fa-envelope"></i><br><a href="mailto:btraitrustdeal@gmail.com" style="color:var(--text);text-decoration:none;">btraitrustdeal@gmail.com</a></div>
+          <div class="footer-item"><i class="fa-brands fa-instagram"></i><br><a href="https://instagram.com/black_temple_official_" target="_blank" style="color:var(--text);text-decoration:none;">black_temple_official_</a></div>
+        </div>
+        <div style="text-align:center; margin-top:3rem; color:var(--text-muted);">
+          © 2025–2026 BLACK TEMPLE · ALL INDIA TRUSTED DEALER
+        </div>
+      </footer>
+
+      <a href="https://wa.me/917619643039" target="_blank" class="whatsapp-float">
+        <i class="fa-brands fa-whatsapp"></i>
+      </a>
+    `;
+
+    const slider = document.getElementById('priceSlider');
+    const display = document.getElementById('priceDisplay');
+    if (slider && display) {
+      slider.addEventListener('input', () => {
+        display.textContent = `₹${Number(slider.value).toLocaleString('en-IN')}`;
+        renderStore();
+      });
+      renderStore();
+    }
+  }
+}
+
+window.onload = loadApp;
+</script>
 </body>
 </html>
