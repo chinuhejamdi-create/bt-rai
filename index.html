@@ -288,7 +288,7 @@
 
     .whatsapp-float:hover { transform: scale(1.18); }
 
-    /* ADMIN STYLES */
+    /* ─── ADMIN ─── */
     .admin-login-container,
     .admin-panel {
       background: rgba(18,18,30,0.88);
@@ -331,6 +331,7 @@
       font-weight: 700;
       margin: 0.8rem 0 1.2rem;
       cursor: pointer;
+      font-size: 1rem;
     }
 
     .preview-thumb {
@@ -354,12 +355,33 @@
 
 <script>
 // ────────────────────────────────────────────────
-// DATA
+// DATA (in-memory – lost on page refresh)
 // ────────────────────────────────────────────────
 let idList = [
-  { img: "https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=600&auto=format", level: 72, rank: "HEROIC", gunSkins: 48, charSkins: "Chrono, Alok, K", bundle: "Elite pass S24 + emote", description: "Rare account with good stats...", price: 2899, sold: false },
-  { img: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format", level: 65, rank: "GRANDMASTER", gunSkins: 37, charSkins: "Alok, Skyler, Hayato", bundle: "Legendary bundle + car skin", description: "Grandmaster rank ready...", price: 1999, sold: false },
-  { img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format", level: 95, rank: "LEGENDARY", gunSkins: 120, charSkins: "All limited + DJ Alok", bundle: "Rare glacier + 2 lakh diamonds", description: "LEGENDARY ULTIMATE account...", price: 75000, sold: false }
+  {
+    img: "https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=600&auto=format",
+    level: 72, rank: "HEROIC", gunSkins: 48,
+    charSkins: "Chrono, Alok, K",
+    bundle: "Elite pass S24 + emote",
+    description: "Rare account with good stats...",
+    price: 2899, sold: false
+  },
+  {
+    img: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format",
+    level: 65, rank: "GRANDMASTER", gunSkins: 37,
+    charSkins: "Alok, Skyler, Hayato",
+    bundle: "Legendary bundle + car skin",
+    description: "Grandmaster rank ready...",
+    price: 1999, sold: false
+  },
+  {
+    img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format",
+    level: 95, rank: "LEGENDARY", gunSkins: 120,
+    charSkins: "All limited + DJ Alok",
+    bundle: "Rare glacier + 2 lakh diamonds",
+    description: "LEGENDARY ULTIMATE account...",
+    price: 75000, sold: false
+  }
 ];
 
 // ────────────────────────────────────────────────
@@ -380,29 +402,26 @@ window.handleImageUpload = (input, index) => {
     const hidden = document.getElementById(`img${index}`);
     if (hidden) hidden.value = dataUrl;
 
-    // Keep data in sync immediately
+    // Keep model in sync
     idList[index].img = dataUrl;
   };
   reader.readAsDataURL(file);
 };
 
-function buyNow(index) {
-  const item = idList[index];
+function buyNow(idx) {
+  const item = idList[idx];
   if (item.sold) return alert("This account is already sold.");
-  const msg = `Hi! Interested in Free Fire ID #${index+1} - Lv ${item.level} ${item.rank} for ₹${item.price}`;
+  const msg = `Hi! Interested in FF ID #${idx+1} - Lv ${item.level} ${item.rank} for ₹${item.price}`;
   window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-function chatNow(index) {
-  const item = idList[index];
+function chatNow(idx) {
+  const item = idList[idx];
   if (item.sold) return alert("This account is already sold.");
-  const msg = `Hello! Question about ID #${index+1} (Lv ${item.level} ${item.rank})`;
+  const msg = `Hello! I have questions about ID #${idx+1}`;
   window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-// ────────────────────────────────────────────────
-// RENDER STORE (MAIN PAGE)
-// ────────────────────────────────────────────────
 function renderStore() {
   const max = parseInt(document.getElementById('priceSlider')?.value) || 100000;
   const container = document.getElementById('idCardContainer');
@@ -410,38 +429,39 @@ function renderStore() {
 
   container.innerHTML = '';
 
-  const available = idList.filter(item => !item.sold && item.price >= 500 && item.price <= max);
+  const shown = idList.filter(it => !it.sold && it.price <= max);
 
-  if (available.length === 0) {
-    container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:3rem;">No accounts available in this price range.</p>';
+  if (shown.length === 0) {
+    container.innerHTML = '<p style="text-align:center;padding:3rem;color:var(--text-muted);">No accounts available in this price range.</p>';
     return;
   }
 
-  available.forEach((item) => {
-    const idx = idList.indexOf(item);
+  shown.forEach((item) => {
+    const globalIdx = idList.indexOf(item);
+
     const card = document.createElement('div');
     card.className = 'id-card';
 
     card.innerHTML = `
       <div class="img-wrapper" onclick="openImage('${item.img}')">
-        <img src="${item.img}" alt="FF ID" onerror="this.src='https://placehold.co/600x400/1a1a24/00d4ff?text=IMAGE+ERROR'">
+        <img src="${item.img}" alt="FF ID" onerror="this.src='https://placehold.co/600x400/1a1a24/00d4ff?text=NO+IMAGE'">
       </div>
       <div class="card-content">
         <div class="id-stats">
           <div class="stat-item"><i class="fa-solid fa-level-up"></i> Lv ${item.level}</div>
           <div class="stat-item"><i class="fa-solid fa-trophy"></i> ${item.rank}</div>
           <div class="stat-item"><i class="fa-solid fa-gun"></i> ${item.gunSkins}</div>
-          <div class="stat-item"><i class="fa-solid fa-user"></i> ${item.charSkins.split(',').filter(s=>s.trim()).length}</div>
+          <div class="stat-item"><i class="fa-solid fa-user"></i> ${item.charSkins.split(',').filter(Boolean).length}</div>
         </div>
-        <p><strong>Characters:</strong> ${item.charSkins}</p>
+        <p><strong>Chars:</strong> ${item.charSkins}</p>
         <p><strong>Bundle:</strong> ${item.bundle}</p>
         <div class="description-box">${item.description}</div>
         <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
         <div class="btn-group">
-          <button class="btn btn-whatsapp" onclick="buyNow(${idx})">
+          <button class="btn btn-whatsapp" onclick="buyNow(${globalIdx})">
             <i class="fa-brands fa-whatsapp"></i> BUY NOW
           </button>
-          <button class="btn btn-chat" onclick="chatNow(${idx})">
+          <button class="btn btn-chat" onclick="chatNow(${globalIdx})">
             <i class="fa-brands fa-whatsapp"></i> CHAT
           </button>
         </div>
@@ -451,9 +471,6 @@ function renderStore() {
   });
 }
 
-// ────────────────────────────────────────────────
-// ADMIN PANEL RENDER + CRUD
-// ────────────────────────────────────────────────
 function renderAdminPanel() {
   const content = document.getElementById('adminContent');
   if (!content) return;
@@ -464,11 +481,12 @@ function renderAdminPanel() {
     card.className = 'admin-card';
     card.innerHTML = `
       <h3>ID #${i+1}</h3>
+
       <img id="preview${i}" class="preview-thumb" src="${item.img || 'https://placehold.co/600x180/1a1a24/444?text=Upload+Image'}" alt="preview">
 
       <input type="file" id="file${i}" accept="image/*" style="display:none" onchange="handleImageUpload(this, ${i})">
       <button class="file-upload-btn" onclick="document.getElementById('file${i}').click()">
-        <i class="fa-solid fa-image"></i> Change Image
+        <i class="fa-solid fa-image"></i> Upload / Change Image
       </button>
 
       <input type="hidden" id="img${i}" value="${item.img || ''}">
@@ -477,26 +495,22 @@ function renderAdminPanel() {
       <input id="rank${i}"    value="${item.rank}"        placeholder="Rank">
       <input id="gunSkins${i}" value="${item.gunSkins}"   placeholder="Gun Skins count">
       <input id="charSkins${i}" value="${item.charSkins}" placeholder="Characters (comma separated)">
-      <input id="bundle${i}"  value="${item.bundle}"      placeholder="Bundle / Pass">
+      <input id="bundle${i}"  value="${item.bundle}"      placeholder="Bundle / Elite Pass">
       <textarea id="desc${i}"  placeholder="Description">${item.description}</textarea>
       <input id="price${i}"   value="${item.price}"       placeholder="Price (₹)">
 
       <div style="margin:1.4rem 0;">
-        <label style="display:flex; align-items:center; gap:0.6rem; font-size:0.95rem;">
-          <input type="checkbox" id="sold${i}" ${item.sold ? 'checked' : ''}>
-          Mark as Sold / Not Available
-        </label>
+        <label><input type="checkbox" id="sold${i}" ${item.sold ? 'checked' : ''}> Sold / Not Available</label>
       </div>
 
-      <button style="background:var(--accent);color:#000;padding:0.9rem 1.6rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;margin-right:0.8rem;" onclick="updateId(${i})">SAVE</button>
-      <button style="background:var(--danger);color:white;padding:0.9rem 1.6rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;" onclick="deleteId(${i})">DELETE</button>
+      <button style="background:var(--accent);color:#000;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;margin-right:0.8rem;" onclick="updateId(${i})">SAVE</button>
+      <button style="background:var(--danger);color:white;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;" onclick="deleteId(${i})">DELETE</button>
     `;
     content.appendChild(card);
   });
 
-  // Add new account button
   const addBtn = document.createElement('button');
-  addBtn.textContent = '+ ADD NEW ACCOUNT (start with image)';
+  addBtn.textContent = '+ ADD NEW ACCOUNT (upload image first)';
   addBtn.style.cssText = 'width:100%; padding:1.3rem; background:var(--success); color:#000; border:none; border-radius:999px; font-weight:700; font-size:1.1rem; margin:2rem 0; cursor:pointer;';
   addBtn.onclick = () => {
     const input = document.createElement('input');
@@ -515,7 +529,7 @@ function renderAdminPanel() {
           gunSkins: 0,
           charSkins: "",
           bundle: "",
-          description: "New account - edit details",
+          description: "New account – please edit",
           price: 999,
           sold: false
         });
@@ -525,16 +539,16 @@ function renderAdminPanel() {
     };
     document.body.appendChild(input);
     input.click();
-    setTimeout(() => document.body.removeChild(input), 500);
+    setTimeout(() => document.body.removeChild(input), 300);
   };
   content.appendChild(addBtn);
 }
 
 window.updateId = (idx) => {
-  const hiddenImg = document.getElementById(`img${idx}`)?.value;
+  const hiddenImg = document.getElementById(`img${idx}`)?.value || idList[idx].img;
 
   idList[idx] = {
-    img: hiddenImg || idList[idx].img,
+    img: hiddenImg,
     level: parseInt(document.getElementById(`level${idx}`)?.value) || 1,
     rank: document.getElementById(`rank${idx}`)?.value.trim() || "HEROIC",
     gunSkins: parseInt(document.getElementById(`gunSkins${idx}`)?.value) || 0,
@@ -545,18 +559,19 @@ window.updateId = (idx) => {
     sold: document.getElementById(`sold${idx}`)?.checked || false
   };
 
-  alert(`Account #${idx+1} saved!`);
+  alert(`Account #${idx+1} saved successfully!`);
   renderAdminPanel();
 };
 
 window.deleteId = (idx) => {
-  if (!confirm("Delete this account permanently?")) return;
-  idList.splice(idx, 1);
-  renderAdminPanel();
+  if (confirm("Delete this account?")) {
+    idList.splice(idx, 1);
+    renderAdminPanel();
+  }
 };
 
 // ────────────────────────────────────────────────
-// PAGE LOADER
+// ROUTER
 // ────────────────────────────────────────────────
 function loadApp() {
   const isAdmin = window.location.pathname.includes('/admin');
@@ -582,7 +597,7 @@ function loadApp() {
               <button onclick="window.location.href='/'" style="background:#333; color:white; padding:0.8rem 1.6rem; border:1px solid var(--accent); border-radius:999px; cursor:pointer; font-weight:600;">← Back to Store</button>
             </div>
             <div class="admin-panel">
-              <h2 style="color:var(--accent); margin-bottom:1.5rem;">Manage Accounts</h2>
+              <h2 style="color:var(--accent); margin-bottom:1.5rem;">Manage Free Fire Accounts</h2>
               <div id="adminContent"></div>
             </div>
           </div>
@@ -593,7 +608,6 @@ function loadApp() {
       }
     };
   } else {
-    // MAIN STORE PAGE
     app.innerHTML = `
       <div class="container">
         <div class="header">
@@ -652,7 +666,7 @@ function loadApp() {
         display.textContent = `₹${Number(slider.value).toLocaleString('en-IN')}`;
         renderStore();
       });
-      // Always render fresh data when main page loads
+      // ─── IMPORTANT ─── Always render when main page is shown
       renderStore();
     }
   }
