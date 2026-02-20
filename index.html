@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BLACK TEMPLE · PREMIUM FF IDs</title>
+  <title>BLACK TEMPLE · MULTI‑IMAGE · SORT</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -102,14 +106,16 @@
       box-shadow: var(--glow);
     }
 
-    .filter-wrapper {
+    .filter-sort-bar {
       background: rgba(18,18,30,0.75);
       backdrop-filter: blur(14px);
       border: 1px solid var(--border);
       border-radius: 20px;
       padding: 1.6rem;
       margin: 2rem auto;
-      max-width: 620px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
     }
 
     .price-slider {
@@ -123,6 +129,37 @@
       background: var(--accent); border: 3px solid #000;
       border-radius: 50%; cursor: pointer;
       box-shadow: 0 0 24px var(--accent);
+    }
+
+    .sort-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      justify-content: center;
+    }
+
+    .sort-btn {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.7rem 1.4rem;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .sort-btn:hover {
+      background: var(--accent-dark);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    .sort-btn.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
     }
 
     .card-grid {
@@ -165,14 +202,44 @@
       height: 190px;
       overflow: hidden;
       cursor: pointer;
+      position: relative;
     }
 
-    .img-wrapper img {
-      width: 100%; height: 100%; object-fit: cover;
-      transition: transform 0.5s ease;
+    .slideshow-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
     }
 
-    .id-card:hover .img-wrapper img { transform: scale(1.14); }
+    .slide-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    .slide-img.active {
+      opacity: 1;
+    }
+
+    .slide-indicator {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      z-index: 5;
+      border: 1px solid var(--accent);
+      font-weight: 600;
+      backdrop-filter: blur(4px);
+    }
 
     .card-content {
       padding: 1.3rem;
@@ -237,6 +304,7 @@
 
     .btn-whatsapp { background: #25D366; color: #000; }
     .btn-whatsapp:hover { background: #20b858; transform: scale(1.05); }
+    .btn-whatsapp:disabled { background: #666; cursor: not-allowed; opacity: 0.5; }
 
     .btn-chat {
       background: var(--surface-elevated);
@@ -244,6 +312,7 @@
       color: var(--accent);
     }
     .btn-chat:hover { background: rgba(0,212,255,0.18); transform: scale(1.03); }
+    .btn-chat:disabled { opacity: 0.5; cursor: not-allowed; }
 
     .footer-black {
       background: rgba(10,10,20,0.92);
@@ -284,11 +353,11 @@
       box-shadow: 0 12px 40px rgba(37,213,102,0.45);
       z-index: 9999;
       transition: all 0.3s;
+      text-decoration: none;
     }
 
     .whatsapp-float:hover { transform: scale(1.18); }
 
-    /* ─── ADMIN ─── */
     .admin-login-container,
     .admin-panel {
       background: rgba(18,18,30,0.88);
@@ -297,10 +366,11 @@
       border-radius: 28px;
       padding: 2.8rem;
       margin: 5rem auto;
-      max-width: 540px;
+      max-width: 620px;
       box-shadow: 0 0 80px rgba(0,0,0,0.8);
     }
 
+    .admin-login-container input,
     .admin-card input,
     .admin-card textarea {
       width: 100%;
@@ -311,6 +381,7 @@
       border-radius: 14px;
       color: var(--text);
       font-size: 1.05rem;
+      font-family: 'Exo', sans-serif;
     }
 
     .admin-card {
@@ -318,7 +389,7 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 1.5rem;
-      margin-bottom: 1.6rem;
+      margin-bottom: 1.4rem;
     }
 
     .file-upload-btn {
@@ -332,14 +403,109 @@
       margin: 0.8rem 0 1.2rem;
       cursor: pointer;
       font-size: 1rem;
+      transition: all 0.2s;
     }
 
-    .preview-thumb {
-      width: 100%;
-      max-height: 180px;
+    .file-upload-btn:hover {
+      background: var(--accent);
+      transform: scale(1.02);
+    }
+
+    .file-upload-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .image-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 10px 0;
+      max-height: 140px;
+      overflow-y: auto;
+      padding: 6px;
+      background: #0a0a14;
+      border-radius: 20px;
+    }
+
+    .image-thumb {
+      width: 60px;
+      height: 60px;
       object-fit: cover;
-      display: block;
-      margin: 0.4rem 0 1.2rem;
+      border-radius: 12px;
+      border: 2px solid var(--accent);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .image-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px var(--accent);
+    }
+
+    .upload-progress-container {
+      margin: 1rem 0;
+      padding: 1rem;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    .upload-progress {
+      width: 100%;
+      height: 6px;
+      background: var(--border);
+      border-radius: 4px;
+      margin: 10px 0;
+      overflow: hidden;
+    }
+
+    .upload-progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--success));
+      border-radius: 4px;
+      width: 0%;
+      transition: width 0.3s;
+    }
+
+    .upload-status {
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 12px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid var(--accent);
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .loading-spinner {
+      text-align: center;
+      padding: 3rem;
+      color: var(--text-muted);
+    }
+
+    .error-message {
+      background: rgba(255,77,106,0.2);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      text-align: center;
+    }
+
+    .success-message {
+      background: rgba(0,255,157,0.2);
+      border: 1px solid var(--success);
+      color: var(--success);
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      text-align: center;
     }
 
     @media (max-width: 768px) {
@@ -354,307 +520,718 @@
 <div id="app"></div>
 
 <script>
-// ────────────────────────────────────────────────
-// DATA (in-memory – lost on page refresh)
-// ────────────────────────────────────────────────
-let idList = [
-  {
-    img: "https://images.unsplash.com/photo-1607604331653-71fdf6eec41c?w=600&auto=format",
-    level: 72, rank: "HEROIC", gunSkins: 48,
-    charSkins: "Chrono, Alok, K",
-    bundle: "Elite pass S24 + emote",
-    description: "Rare account with good stats...",
-    price: 2899, sold: false
-  },
-  {
-    img: "https://images.unsplash.com/photo-1560253023-3ec5d502959f?w=600&auto=format",
-    level: 65, rank: "GRANDMASTER", gunSkins: 37,
-    charSkins: "Alok, Skyler, Hayato",
-    bundle: "Legendary bundle + car skin",
-    description: "Grandmaster rank ready...",
-    price: 1999, sold: false
-  },
-  {
-    img: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&auto=format",
-    level: 95, rank: "LEGENDARY", gunSkins: 120,
-    charSkins: "All limited + DJ Alok",
-    bundle: "Rare glacier + 2 lakh diamonds",
-    description: "LEGENDARY ULTIMATE account...",
-    price: 75000, sold: false
-  }
-];
-
-// ────────────────────────────────────────────────
-// HELPERS
-// ────────────────────────────────────────────────
-window.openImage = (url) => window.open(url, '_blank');
-
-window.handleImageUpload = (input, index) => {
-  const file = input.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const dataUrl = e.target.result;
-    const preview = document.getElementById(`preview${index}`);
-    if (preview) preview.src = dataUrl;
-
-    const hidden = document.getElementById(`img${index}`);
-    if (hidden) hidden.value = dataUrl;
-
-    // Keep model in sync
-    idList[index].img = dataUrl;
-  };
-  reader.readAsDataURL(file);
+const firebaseConfig = {
+  apiKey: "AIzaSyAzcJGHzRntlI_YDz3T2Z1SiiARr6hMB1g",
+  authDomain: "bunny-8568c.firebaseapp.com",
+  projectId: "bunny-8568c",
+  storageBucket: "bunny-8568c.firebasestorage.app",
+  messagingSenderId: "300443815873",
+  appId: "1:300443815873:web:eb27d1c33091d3bae42940",
+  measurementId: "G-6TVCBKTX9K"
 };
 
-function buyNow(idx) {
-  const item = idList[idx];
-  if (item.sold) return alert("This account is already sold.");
-  const msg = `Hi! Interested in FF ID #${idx+1} - Lv ${item.level} ${item.rank} for ₹${item.price}`;
-  window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// Enable persistence with error handling
+db.enablePersistence({ synchronizeTabs: true })
+  .catch(err => {
+    if (err.code === 'failed-precondition') {
+      console.log('Persistence failed: Multiple tabs open');
+    } else if (err.code === 'unimplemented') {
+      console.log('Persistence not supported');
+    }
+  });
+
+let idList = [];
+let currentSort = 'none';
+const slideshowIntervals = {};
+
+// Helper function to find element by text content
+function findElementByText(selector, text) {
+  const elements = document.querySelectorAll(selector);
+  return Array.from(elements).find(el => el.textContent.includes(text));
 }
 
-function chatNow(idx) {
-  const item = idList[idx];
-  if (item.sold) return alert("This account is already sold.");
-  const msg = `Hello! I have questions about ID #${idx+1}`;
-  window.open(`https://wa.me/917619643039?text=${encodeURIComponent(msg)}`, '_blank');
+// Helper function to validate image URL
+function validateImageUrl(url) {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
 }
 
+// Retry failed image loads
+function retryImageLoad(imgElement, url, maxRetries = 3) {
+  let retries = 0;
+  
+  const tryLoad = () => {
+    imgElement.src = url + (url.includes('?') ? '&' : '?') + 'retry=' + Date.now();
+  };
+  
+  imgElement.onerror = () => {
+    retries++;
+    if (retries < maxRetries) {
+      setTimeout(tryLoad, 1000 * retries);
+    }
+  };
+  
+  tryLoad();
+}
+
+// Start slideshow function
+function startSlideshow(cardId, images) {
+  if (slideshowIntervals[cardId]) {
+    clearInterval(slideshowIntervals[cardId]);
+    delete slideshowIntervals[cardId];
+  }
+  
+  if (!images || images.length <= 1) return;
+
+  let idx = 0;
+  const card = document.getElementById(cardId);
+  if (!card) return;
+  
+  const slides = card.querySelectorAll('.slide-img');
+  const indicator = card.querySelector('.slide-indicator');
+
+  if (!slides.length) return;
+
+  // Set first slide active
+  slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+  if (indicator) indicator.textContent = `${idx + 1}/${images.length}`;
+
+  slideshowIntervals[cardId] = setInterval(() => {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    if (indicator) indicator.textContent = `${idx + 1}/${images.length}`;
+    idx = (idx + 1) % images.length;
+  }, 3000);
+}
+
+// Load accounts with real-time updates
+function loadAccounts() {
+  const container = document.getElementById('idCardContainer');
+  if (container) {
+    container.innerHTML = `
+      <div class="loading-spinner">
+        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+        <p>Loading accounts...</p>
+      </div>
+    `;
+  }
+
+  db.collection('accounts')
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(snapshot => {
+      idList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      renderStore();
+    }, error => {
+      console.error("Firestore error:", error);
+      if (container) {
+        container.innerHTML = `<div class="error-message">Firebase connection issue: ${error.message}</div>`;
+      }
+    });
+}
+
+// Render store function
 function renderStore() {
-  const max = parseInt(document.getElementById('priceSlider')?.value) || 100000;
+  // Clear all slideshow intervals
+  Object.keys(slideshowIntervals).forEach(key => {
+    clearInterval(slideshowIntervals[key]);
+    delete slideshowIntervals[key];
+  });
+
+  const maxPrice = parseInt(document.getElementById('priceSlider')?.value) || 100000;
+  let filtered = idList.filter(a => a.price >= 500 && a.price <= maxPrice && !a.sold);
+
+  if (currentSort === 'price-asc')      filtered.sort((a,b) => a.price - b.price);
+  else if (currentSort === 'price-desc') filtered.sort((a,b) => b.price - a.price);
+  else if (currentSort === 'level-asc')  filtered.sort((a,b) => a.level - b.level);
+  else if (currentSort === 'level-desc') filtered.sort((a,b) => b.level - a.level);
+
   const container = document.getElementById('idCardContainer');
   if (!container) return;
 
-  container.innerHTML = '';
+  container.innerHTML = filtered.length === 0 ? `
+    <div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">
+      <i class="fa-solid fa-box-open fa-3x"></i><p style="margin-top:1rem;">No accounts available</p>
+    </div>
+  ` : '';
 
-  const shown = idList.filter(it => !it.sold && it.price <= max);
-
-  if (shown.length === 0) {
-    container.innerHTML = '<p style="text-align:center;padding:3rem;color:var(--text-muted);">No accounts available in this price range.</p>';
-    return;
-  }
-
-  shown.forEach((item) => {
-    const globalIdx = idList.indexOf(item);
-
+  filtered.forEach(item => {
+    const cardId = `card-${item.id}`;
     const card = document.createElement('div');
     card.className = 'id-card';
+    card.id = cardId;
+
+    if (item.sold) {
+      const badge = document.createElement('div');
+      badge.className = 'sold-badge';
+      badge.textContent = 'SOLD';
+      card.appendChild(badge);
+    }
+
+    let slidesHtml = '';
+    const images = item.images || [];
+    
+    if (images.length > 0) {
+      images.forEach((img, i) => {
+        slidesHtml += `<img class="slide-img ${i===0?'active':''}" src="${img}" onclick="window.open('${img}','_blank')" onerror="this.src='https://placehold.co/600x400/1a1a24/00d4ff?text=IMAGE+ERROR'" alt="Account image ${i+1}">`;
+      });
+    } else {
+      slidesHtml = `<img class="slide-img active" src="https://placehold.co/600x400/1a1a24/00d4ff?text=NO+IMAGE" alt="No image">`;
+    }
 
     card.innerHTML = `
-      <div class="img-wrapper" onclick="openImage('${item.img}')">
-        <img src="${item.img}" alt="FF ID" onerror="this.src='https://placehold.co/600x400/1a1a24/00d4ff?text=NO+IMAGE'">
+      <div class="img-wrapper">
+        <div class="slideshow-container">
+          ${slidesHtml}
+          ${images.length > 1 ? `<span class="slide-indicator">1/${images.length}</span>` : ''}
+        </div>
       </div>
       <div class="card-content">
         <div class="id-stats">
-          <div class="stat-item"><i class="fa-solid fa-level-up"></i> Lv ${item.level}</div>
-          <div class="stat-item"><i class="fa-solid fa-trophy"></i> ${item.rank}</div>
-          <div class="stat-item"><i class="fa-solid fa-gun"></i> ${item.gunSkins}</div>
-          <div class="stat-item"><i class="fa-solid fa-user"></i> ${item.charSkins.split(',').filter(Boolean).length}</div>
+          <div class="stat-item"><i class="fa-solid fa-level-up"></i> Lv ${item.level || 0}</div>
+          <div class="stat-item"><i class="fa-solid fa-trophy"></i> ${item.rank || 'N/A'}</div>
+          <div class="stat-item"><i class="fa-solid fa-gun"></i> ${item.gunSkins || 0}</div>
+          <div class="stat-item"><i class="fa-solid fa-user"></i> ${item.charSkins ? item.charSkins.split(',').length : 0}</div>
         </div>
-        <p><strong>Chars:</strong> ${item.charSkins}</p>
-        <p><strong>Bundle:</strong> ${item.bundle}</p>
-        <div class="description-box">${item.description}</div>
-        <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
+        <p><strong>Chars:</strong> ${item.charSkins || 'None'}</p>
+        <p><strong>Bundle:</strong> ${item.bundle || 'None'}</p>
+        <div class="description-box">${item.description || 'No description'}</div>
+        <div class="price">₹${(item.price || 0).toLocaleString('en-IN')}</div>
         <div class="btn-group">
-          <button class="btn btn-whatsapp" onclick="buyNow(${globalIdx})">
+          <button class="btn btn-whatsapp" onclick="buyNow('${item.id}')" ${item.sold?'disabled':''}>
             <i class="fa-brands fa-whatsapp"></i> BUY NOW
           </button>
-          <button class="btn btn-chat" onclick="chatNow(${globalIdx})">
+          <button class="btn btn-chat" onclick="chatNow('${item.id}')" ${item.sold?'disabled':''}>
             <i class="fa-brands fa-whatsapp"></i> CHAT
           </button>
         </div>
       </div>
     `;
     container.appendChild(card);
+
+    if (images.length > 1) {
+      setTimeout(() => startSlideshow(cardId, images), 100);
+    }
   });
 }
 
-function renderAdminPanel() {
-  const content = document.getElementById('adminContent');
-  if (!content) return;
-  content.innerHTML = '';
-
-  idList.forEach((item, i) => {
-    const card = document.createElement('div');
-    card.className = 'admin-card';
-    card.innerHTML = `
-      <h3>ID #${i+1}</h3>
-
-      <img id="preview${i}" class="preview-thumb" src="${item.img || 'https://placehold.co/600x180/1a1a24/444?text=Upload+Image'}" alt="preview">
-
-      <input type="file" id="file${i}" accept="image/*" style="display:none" onchange="handleImageUpload(this, ${i})">
-      <button class="file-upload-btn" onclick="document.getElementById('file${i}').click()">
-        <i class="fa-solid fa-image"></i> Upload / Change Image
-      </button>
-
-      <input type="hidden" id="img${i}" value="${item.img || ''}">
-
-      <input id="level${i}"   value="${item.level}"       placeholder="Level">
-      <input id="rank${i}"    value="${item.rank}"        placeholder="Rank">
-      <input id="gunSkins${i}" value="${item.gunSkins}"   placeholder="Gun Skins count">
-      <input id="charSkins${i}" value="${item.charSkins}" placeholder="Characters (comma separated)">
-      <input id="bundle${i}"  value="${item.bundle}"      placeholder="Bundle / Elite Pass">
-      <textarea id="desc${i}"  placeholder="Description">${item.description}</textarea>
-      <input id="price${i}"   value="${item.price}"       placeholder="Price (₹)">
-
-      <div style="margin:1.4rem 0;">
-        <label><input type="checkbox" id="sold${i}" ${item.sold ? 'checked' : ''}> Sold / Not Available</label>
-      </div>
-
-      <button style="background:var(--accent);color:#000;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;margin-right:0.8rem;" onclick="updateId(${i})">SAVE</button>
-      <button style="background:var(--danger);color:white;padding:0.9rem 1.4rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;" onclick="deleteId(${i})">DELETE</button>
-    `;
-    content.appendChild(card);
-  });
-
-  const addBtn = document.createElement('button');
-  addBtn.textContent = '+ ADD NEW ACCOUNT (upload image first)';
-  addBtn.style.cssText = 'width:100%; padding:1.3rem; background:var(--success); color:#000; border:none; border-radius:999px; font-weight:700; font-size:1.1rem; margin:2rem 0; cursor:pointer;';
-  addBtn.onclick = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.style.display = 'none';
-    input.onchange = e => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = ev => {
-        idList.push({
-          img: ev.target.result,
-          level: 1,
-          rank: "NEW",
-          gunSkins: 0,
-          charSkins: "",
-          bundle: "",
-          description: "New account – please edit",
-          price: 999,
-          sold: false
-        });
-        renderAdminPanel();
-      };
-      reader.readAsDataURL(file);
-    };
-    document.body.appendChild(input);
-    input.click();
-    setTimeout(() => document.body.removeChild(input), 300);
-  };
-  content.appendChild(addBtn);
+// Set sort function
+function setSort(type) {
+  currentSort = type;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === type));
+  renderStore();
 }
 
-window.updateId = (idx) => {
-  const hiddenImg = document.getElementById(`img${idx}`)?.value || idList[idx].img;
-
-  idList[idx] = {
-    img: hiddenImg,
-    level: parseInt(document.getElementById(`level${idx}`)?.value) || 1,
-    rank: document.getElementById(`rank${idx}`)?.value.trim() || "HEROIC",
-    gunSkins: parseInt(document.getElementById(`gunSkins${idx}`)?.value) || 0,
-    charSkins: document.getElementById(`charSkins${idx}`)?.value.trim() || "",
-    bundle: document.getElementById(`bundle${idx}`)?.value.trim() || "",
-    description: document.getElementById(`desc${idx}`)?.value.trim() || "",
-    price: parseInt(document.getElementById(`price${idx}`)?.value) || 0,
-    sold: document.getElementById(`sold${idx}`)?.checked || false
-  };
-
-  alert(`Account #${idx+1} saved successfully!`);
-  renderAdminPanel();
+// Buy now function
+window.buyNow = id => {
+  const acc = idList.find(a => a.id === id);
+  if (!acc || acc.sold) return;
+  const text = `🛒 *NEW ORDER*%0a*Level:* ${acc.level} *Rank:* ${acc.rank}%0a*Skins:* ${acc.gunSkins}%0a*Chars:* ${acc.charSkins}%0a*Bundle:* ${acc.bundle}%0a*Desc:* ${acc.description}%0a*Price:* ₹${acc.price}%0a--- Buyer info ---`;
+  window.open(`https://wa.me/917619643039?text=${text}`, '_blank');
 };
 
-window.deleteId = (idx) => {
-  if (confirm("Delete this account?")) {
-    idList.splice(idx, 1);
-    renderAdminPanel();
+// Chat now function
+window.chatNow = id => {
+  const acc = idList.find(a => a.id === id);
+  if (acc) window.open(`https://wa.me/917619643039?text=Hi, interested in ID: Lv ${acc.level} ${acc.rank} (₹${acc.price})`, '_blank');
+};
+
+// Upload image function
+async function uploadImage(file, docId) {
+  return new Promise((resolve, reject) => {
+    // Validate file
+    if (!file.type.startsWith('image/')) {
+      reject(new Error('File is not an image'));
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      reject(new Error('File size exceeds 5MB limit'));
+      return;
+    }
+
+    // Create unique filename
+    const timestamp = Date.now();
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
+    const filename = `accounts/${docId}/${timestamp}_${randomString}_${safeFileName}`;
+    
+    const storageRef = storage.ref(filename);
+    
+    // Metadata
+    const metadata = {
+      contentType: file.type,
+      customMetadata: {
+        uploadedBy: 'admin',
+        accountId: docId,
+        uploadedAt: new Date().toISOString(),
+        originalName: file.name
+      }
+    };
+
+    const uploadTask = storageRef.put(file, metadata);
+
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        // Update progress if needed
+        const progressBar = document.querySelector('.upload-progress-bar');
+        if (progressBar) progressBar.style.width = progress + '%';
+      },
+      (error) => {
+        console.error('Upload error:', error);
+        reject(error);
+      },
+      async () => {
+        try {
+          const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+          resolve(downloadURL);
+        } catch (error) {
+          console.error('Get download URL error:', error);
+          reject(error);
+        }
+      }
+    );
+  });
+}
+
+// Add image to ID function (FIXED VERSION)
+window.addImageToId = async (docId) => {
+  // Create file input
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.multiple = true;
+  input.accept = 'image/*';
+  input.style.display = 'none';
+
+  input.onchange = async (e) => {
+    const files = [...e.target.files];
+    if (!files.length) return;
+
+    // Find admin card for status placement
+    const adminCard = findElementByText('.admin-card h3 span', docId.slice(0,8))?.closest('.admin-card');
+    const adminContent = document.getElementById('adminContent');
+    
+    // Create status container
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'upload-status';
+    
+    if (adminCard && adminCard.parentElement) {
+      adminCard.parentElement.insertBefore(statusDiv, adminCard);
+    } else if (adminContent) {
+      adminContent.prepend(statusDiv);
+    }
+
+    // Show progress container
+    const progressContainer = document.querySelector('.upload-progress-container');
+    const progressBar = document.querySelector('.upload-progress-bar');
+    const uploadStatus = document.getElementById('uploadStatus');
+    const uploadPercentage = document.getElementById('uploadPercentage');
+    
+    if (progressContainer) progressContainer.style.display = 'block';
+
+    const uploadedUrls = [];
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      try {
+        statusDiv.innerHTML = `📤 Uploading image ${i + 1} of ${files.length}: "${file.name}"...`;
+        if (uploadStatus) uploadStatus.textContent = `Uploading ${file.name}...`;
+        
+        const url = await uploadImage(file, docId);
+        uploadedUrls.push(url);
+        successCount++;
+        
+        statusDiv.innerHTML = `✅ Uploaded ${successCount} of ${files.length} images...`;
+        if (uploadPercentage) uploadPercentage.textContent = `${Math.round((i + 1) / files.length * 100)}%`;
+        
+      } catch (error) {
+        console.error('Upload error for file:', file.name, error);
+        errorCount++;
+        statusDiv.innerHTML = `❌ Error uploading "${file.name}": ${error.message}`;
+      }
+    }
+
+    // Hide progress container
+    if (progressContainer) progressContainer.style.display = 'none';
+    if (progressBar) progressBar.style.width = '0%';
+    if (uploadPercentage) uploadPercentage.textContent = '0%';
+
+    // Save to Firestore if we have successful uploads
+    if (uploadedUrls.length > 0) {
+      try {
+        statusDiv.innerHTML = `💾 Saving ${uploadedUrls.length} image(s) to database...`;
+
+        // Get the current document
+        const docRef = db.collection('accounts').doc(docId);
+        
+        // Use arrayUnion to add new images without duplicates
+        await docRef.update({
+          images: firebase.firestore.FieldValue.arrayUnion(...uploadedUrls)
+        });
+
+        // Success message
+        statusDiv.className = 'success-message';
+        statusDiv.innerHTML = `
+          ✅ Success!<br>
+          - Uploaded: ${successCount} images<br>
+          - Failed: ${errorCount} images<br>
+          <small style="display:block;margin-top:0.5rem;">Refreshing display...</small>
+        `;
+
+        // Refresh the admin panel and store view
+        await renderAdminPanel();
+        renderStore();
+
+        // Remove status after 5 seconds
+        setTimeout(() => {
+          if (statusDiv.parentElement) {
+            statusDiv.style.opacity = '0';
+            statusDiv.style.transition = 'opacity 1s';
+            setTimeout(() => statusDiv.remove(), 1000);
+          }
+        }, 5000);
+
+      } catch (error) {
+        console.error('Firestore update error:', error);
+        statusDiv.className = 'error-message';
+        statusDiv.innerHTML = `
+          ❌ Error saving to database: ${error.message}<br>
+          Images were uploaded to storage but not saved to Firestore.<br>
+          Please try again or contact support.
+        `;
+      }
+    } else {
+      statusDiv.className = 'error-message';
+      statusDiv.innerHTML = '❌ No images were uploaded successfully. Please try again.';
+    }
+
+    // Clean up
+    document.body.removeChild(input);
+  };
+
+  document.body.appendChild(input);
+  input.click();
+};
+
+// Render admin panel function
+async function renderAdminPanel() {
+  const content = document.getElementById('adminContent');
+  if (!content) return;
+
+  content.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div>';
+
+  try {
+    const snap = await db.collection('accounts').orderBy('createdAt', 'desc').get();
+    const accounts = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    idList = accounts;
+
+    content.innerHTML = '';
+
+    accounts.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'admin-card';
+
+      let thumbs = (item.images || []).map((url, i) =>
+        `<img class="image-thumb" src="${url}" onclick="window.open('${url}','_blank')" title="Image ${i+1}" alt="Image ${i+1}" onerror="this.src='https://placehold.co/60x60/1a1a24/ff4d6a?text=ERROR'">`
+      ).join('');
+
+      card.innerHTML = `
+        <h3 style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+          <span>ID ${item.id.slice(0,8)}...</span>
+          <button class="file-upload-btn" style="width:auto;padding:0.6rem 1.2rem;margin:0;" onclick="addImageToId('${item.id}')">➕ ADD IMAGE</button>
+        </h3>
+        <div class="image-list">${thumbs || '<span style="color:var(--text-muted);padding:1rem;">No images uploaded</span>'}</div>
+
+        <label style="display:block;margin-top:1rem;color:var(--text-muted);font-size:0.9rem;">Level</label>
+        <input id="level-${item.id}" type="number" value="${item.level || 0}" placeholder="Level">
+
+        <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Rank</label>
+        <input id="rank-${item.id}" value="${item.rank || ''}" placeholder="Rank (e.g., MASTER)">
+
+        <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Gun Skins</label>
+        <input id="gunSkins-${item.id}" type="number" value="${item.gunSkins || 0}" placeholder="Number of gun skins">
+
+        <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Character Skins (comma-separated)</label>
+        <input id="charSkins-${item.id}" value="${item.charSkins || ''}" placeholder="e.g., Jett, Sage, Reyna">
+
+        <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Bundle</label>
+        <input id="bundle-${item.id}" value="${item.bundle || ''}" placeholder="Bundle name">
+
+        <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Description</label>
+        <textarea id="desc-${item.id}" rows="3" placeholder="Account description">${item.description || ''}</textarea>
+
+        <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Price (₹)</label>
+        <input id="price-${item.id}" type="number" value="${item.price || 0}" placeholder="Price in rupees">
+
+        <div style="margin:1.2rem 0;">
+          <label style="cursor:pointer;"><input type="checkbox" id="sold-${item.id}" ${item.sold ? 'checked' : ''}> <span style="color:var(--text);">Mark as Sold</span></label>
+        </div>
+
+        <div style="display:flex;gap:0.8rem;">
+          <button style="flex:2;background:var(--accent);color:#000;padding:1rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;transition:all 0.2s;" onclick="updateId('${item.id}')" onmouseover="this.style.background='var(--success)'" onmouseout="this.style.background='var(--accent)'">💾 SAVE CHANGES</button>
+          <button style="flex:1;background:var(--danger);color:white;padding:1rem;border:none;border-radius:999px;font-weight:700;cursor:pointer;transition:all 0.2s;" onclick="deleteId('${item.id}')" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">🗑 DELETE</button>
+        </div>
+      `;
+      content.appendChild(card);
+    });
+
+    const addBtn = document.createElement('button');
+    addBtn.innerHTML = '<i class="fa-solid fa-plus"></i> ADD NEW ACCOUNT';
+    addBtn.style.cssText = 'width:100%;padding:1.4rem;background:#00ff9d;color:#000;border:none;border-radius:999px;font-weight:700;font-size:1.1rem;margin:2rem 0;cursor:pointer;transition:all 0.2s;';
+    addBtn.onmouseover = () => addBtn.style.background = '#00cc7d';
+    addBtn.onmouseout = () => addBtn.style.background = '#00ff9d';
+
+    addBtn.onclick = async () => {
+      const originalText = addBtn.innerHTML;
+      addBtn.disabled = true;
+      addBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
+      addBtn.style.opacity = '0.6';
+
+      const data = {
+        images: [],
+        level: 50,
+        rank: "MASTER",
+        gunSkins: 15,
+        charSkins: "Jett, Sage, Reyna",
+        bundle: "Prime 2.0",
+        description: "New account – edit details and add images",
+        price: 1499,
+        sold: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      try {
+        const docRef = await db.collection('accounts').add(data);
+        const msg = document.createElement('div');
+        msg.className = 'success-message';
+        msg.textContent = `✓ Account created successfully! ID: ${docRef.id}`;
+        content.insertBefore(msg, content.firstChild);
+
+        setTimeout(() => msg.remove(), 3000);
+
+        await renderAdminPanel();
+      } catch (err) {
+        console.error('Create error:', err);
+        const errMsg = document.createElement('div');
+        errMsg.className = 'error-message';
+        errMsg.textContent = `Failed to create account: ${err.message}`;
+        content.insertBefore(errMsg, content.firstChild);
+
+        addBtn.disabled = false;
+        addBtn.innerHTML = originalText;
+        addBtn.style.opacity = '1';
+      }
+    };
+
+    content.appendChild(addBtn);
+
+  } catch (err) {
+    console.error('Admin panel error:', err);
+    content.innerHTML = `<div class="error-message">Error loading admin panel: ${err.message}</div>`;
+  }
+}
+
+// Update ID function
+window.updateId = async docId => {
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+  const data = {
+    level: parseInt(document.getElementById(`level-${docId}`).value) || 0,
+    rank: document.getElementById(`rank-${docId}`).value.trim() || 'N/A',
+    gunSkins: parseInt(document.getElementById(`gunSkins-${docId}`).value) || 0,
+    charSkins: document.getElementById(`charSkins-${docId}`).value.trim() || 'None',
+    bundle: document.getElementById(`bundle-${docId}`).value.trim() || 'None',
+    description: document.getElementById(`desc-${docId}`).value.trim() || 'No description',
+    price: parseInt(document.getElementById(`price-${docId}`).value) || 0,
+    sold: document.getElementById(`sold-${docId}`).checked
+  };
+
+  try {
+    await db.collection('accounts').doc(docId).update(data);
+
+    btn.innerHTML = '✓ SAVED!';
+    btn.style.background = 'var(--success)';
+
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.background = 'var(--accent)';
+      btn.disabled = false;
+    }, 2000);
+
+    renderStore();
+  } catch (err) {
+    console.error('Update error:', err);
+    btn.innerHTML = '✗ FAILED';
+    btn.style.background = 'var(--danger)';
+
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.background = 'var(--accent)';
+      btn.disabled = false;
+    }, 2000);
   }
 };
 
-// ────────────────────────────────────────────────
-// ROUTER
-// ────────────────────────────────────────────────
+// Delete ID function
+window.deleteId = async docId => {
+  if (!confirm('Are you sure you want to permanently delete this account? This action cannot be undone.')) return;
+
+  const btn = event.target;
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Deleting...';
+
+  try {
+    await db.collection('accounts').doc(docId).delete();
+
+    const msg = document.createElement('div');
+    msg.className = 'success-message';
+    msg.textContent = '✓ Account deleted successfully';
+    document.getElementById('adminContent').insertBefore(msg, document.getElementById('adminContent').firstChild);
+
+    setTimeout(() => msg.remove(), 2000);
+
+    renderAdminPanel();
+    renderStore();
+  } catch (err) {
+    console.error('Delete error:', err);
+    btn.innerHTML = originalText;
+    btn.disabled = false;
+    alert('Failed to delete: ' + err.message);
+  }
+};
+
+// Main load function
 function loadApp() {
-  const isAdmin = window.location.pathname.includes('/admin');
+  const isAdmin = location.pathname.includes('/admin') || location.hash === '#admin';
   const app = document.getElementById('app');
 
   if (isAdmin) {
     app.innerHTML = `
       <div class="admin-login-container">
-        <h2 style="color:var(--accent); margin-bottom:2rem; text-align:center;">ADMIN LOGIN</h2>
-        <input type="password" id="adminPass" placeholder="Password">
-        <button onclick="checkAdmin()" style="width:100%; padding:1.2rem; margin-top:1.2rem; background:var(--accent); color:#000; border:none; border-radius:999px; font-size:1.1rem; font-weight:700; cursor:pointer;">LOGIN</button>
-        <div id="loginError" style="color:var(--danger); margin-top:1.2rem; text-align:center; min-height:1.5rem;"></div>
-        <p style="margin-top:1.8rem; color:var(--text-muted); text-align:center; font-size:0.95rem;">password: admin123</p>
+        <h2 style="color:var(--accent);margin-bottom:2rem;text-align:center;">🔐 ADMIN LOGIN</h2>
+        <input type="password" id="adminPass" placeholder="Enter admin password" onkeypress="if(event.key==='Enter') checkAdmin()">
+        <button onclick="checkAdmin()" style="width:100%;padding:1.2rem;background:var(--accent);color:#000;border:none;border-radius:999px;font-weight:700;cursor:pointer;margin-top:1rem;transition:all 0.2s;" onmouseover="this.style.background='var(--success)'" onmouseout="this.style.background='var(--accent)'">LOGIN</button>
+        <div id="loginError" style="color:var(--danger);margin-top:1.2rem;text-align:center;"></div>
+        <p style="margin-top:1.8rem;color:var(--text-muted);text-align:center;font-size:0.9rem;">Default password: admin123</p>
+        <p style="margin-top:1rem;text-align:center;">
+          <a href="/" style="color:var(--accent);text-decoration:none;">← Back to Store</a>
+        </p>
       </div>
     `;
 
     window.checkAdmin = () => {
-      if (document.getElementById('adminPass').value === 'admin123') {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === 'admin123') {
         app.innerHTML = `
           <div class="container">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin:2.5rem 0 1.5rem;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin:2.5rem 0 1.5rem;flex-wrap:wrap;gap:1rem;">
               <div class="owner-tag"><i class="fa-solid fa-crown"></i> ADMIN PANEL</div>
-              <button onclick="window.location.href='/'" style="background:#333; color:white; padding:0.8rem 1.6rem; border:1px solid var(--accent); border-radius:999px; cursor:pointer; font-weight:600;">← Back to Store</button>
+              <button onclick="location.href='/'" style="background:#333;color:white;padding:0.8rem 1.6rem;border:1px solid var(--accent);border-radius:999px;cursor:pointer;font-weight:600;transition:all 0.2s;" onmouseover="this.style.background='var(--accent-dark)'" onmouseout="this.style.background='#333'">← BACK TO STORE</button>
+            </div>
+            <div class="upload-progress-container" style="display: none;">
+              <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                <span id="uploadStatus">Uploading...</span>
+                <span id="uploadPercentage">0%</span>
+              </div>
+              <div class="upload-progress">
+                <div class="upload-progress-bar" style="width: 0%;"></div>
+              </div>
             </div>
             <div class="admin-panel">
-              <h2 style="color:var(--accent); margin-bottom:1.5rem;">Manage Free Fire Accounts</h2>
+              <h2 style="color:var(--accent);margin-bottom:1.5rem;">Manage Accounts</h2>
               <div id="adminContent"></div>
             </div>
           </div>
         `;
         renderAdminPanel();
       } else {
-        document.getElementById('loginError').textContent = 'Wrong password';
+        document.getElementById('loginError').textContent = '✗ Incorrect password';
       }
     };
+
+    setTimeout(() => document.getElementById('adminPass').focus(), 100);
   } else {
     app.innerHTML = `
       <div class="container">
         <div class="header">
           <div class="logo">BLACK TEMPLE</div>
-          <div class="owner-tag"><i class="fa-solid fa-crown"></i> BT RAI</div>
+          <div class="owner-tag"><i class="fa-solid fa-crown"></i> BT RAI · ALL INDIA TRUSTED</div>
         </div>
 
         <div class="banner">
           <div class="banner-content">
-            <h1>PREMIUM FREE FIRE IDs</h1>
-            <p style="margin-top:0.7rem;">ALL INDIA TRUSTED DEALER</p>
+            <h1>BLACK TEMPLE</h1>
+            <p style="margin-top:0.7rem;">⭐ ALL INDIA TRUSTED DEALER ⭐</p>
           </div>
         </div>
 
-        <div class="filter-wrapper">
-          <div style="display:flex; justify-content:space-between; margin-bottom:1rem; font-weight:600;">
+        <div class="filter-sort-bar">
+          <div style="display:flex;justify-content:space-between;margin-bottom:0.5rem;font-weight:600;">
             <span>₹500</span>
             <span id="priceDisplay">₹100,000</span>
           </div>
           <input type="range" min="500" max="100000" value="100000" step="500" id="priceSlider" class="price-slider">
+
+          <div class="sort-buttons">
+            <button class="sort-btn" data-sort="price-asc" onclick="setSort('price-asc')">💰 Price ↓</button>
+            <button class="sort-btn" data-sort="price-desc" onclick="setSort('price-desc')">💰 Price ↑</button>
+            <button class="sort-btn" data-sort="level-asc" onclick="setSort('level-asc')">📊 Level ↓</button>
+            <button class="sort-btn" data-sort="level-desc" onclick="setSort('level-desc')">📊 Level ↑</button>
+            <button class="sort-btn active" data-sort="none" onclick="setSort('none')">✕ Reset</button>
+          </div>
         </div>
 
-        <h2 class="section-title">AVAILABLE ACCOUNTS</h2>
-        <div class="card-grid" id="idCardContainer"></div>
-
-        <h2 class="section-title">CONTACT US</h2>
-        <div style="background:rgba(20,20,40,0.6); backdrop-filter:blur(12px); border:1px solid var(--border); border-radius:20px; padding:2rem; margin:2rem 0;">
-          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; text-align:center;">
-            <div><i class="fa-solid fa-phone-volume" style="font-size:2rem;color:var(--accent);"></i><br>+91 76196 43039</div>
-            <div><i class="fa-solid fa-envelope" style="font-size:2rem;color:var(--accent);"></i><br>btraitrustdeal@gmail.com</div>
-            <div><i class="fa-brands fa-instagram" style="font-size:2rem;color:var(--accent);"></i><br>@black_temple_official_</div>
+        <h2 class="section-title">⚡ ACCOUNTS</h2>
+        <div class="card-grid" id="idCardContainer">
+          <div class="loading-spinner">
+            <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+            <p>Loading accounts...</p>
           </div>
+        </div>
+
+        <h2 class="section-title">📞 CONTACT</h2>
+        <div style="background:rgba(20,20,40,0.6);backdrop-filter:blur(12px);border:1px solid var(--border);border-radius:20px;padding:2rem;margin:2rem 0;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:2rem;text-align:center;">
+            <div><i class="fa-solid fa-phone-volume" style="font-size:2rem;color:var(--accent);"></i><br><br>+91 76196 43039</div>
+            <div><i class="fa-solid fa-envelope" style="font-size:2rem;color:var(--accent);"></i><br><br>btraitrustdeal@gmail.com</div>
+            <div><i class="fa-brands fa-instagram" style="font-size:2rem;color:var(--accent);"></i><br><br>@black_temple_official_</div>
+          </div>
+        </div>
+
+        <div style="text-align:center;margin:3rem 0 2rem;">
+          <a href="#admin" style="color:var(--text-muted);font-size:0.9rem;text-decoration:none;padding:0.5rem 1rem;border:1px solid var(--border);border-radius:999px;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--accent)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">🔐 Admin Login</a>
         </div>
       </div>
 
       <footer class="footer-black">
         <div class="footer-grid">
-          <div class="footer-item"><i class="fa-solid fa-phone"></i><br><a href="tel:+917619643039" style="color:var(--text);text-decoration:none;">+91 7619643039</a></div>
-          <div class="footer-item"><i class="fa-solid fa-envelope"></i><br><a href="mailto:btraitrustdeal@gmail.com" style="color:var(--text);text-decoration:none;">btraitrustdeal@gmail.com</a></div>
-          <div class="footer-item"><i class="fa-brands fa-instagram"></i><br><a href="https://instagram.com/black_temple_official_" target="_blank" style="color:var(--text);text-decoration:none;">black_temple_official_</a></div>
+          <div class="footer-item"><i class="fa-solid fa-phone"></i><br><br><a href="tel:+917619643039" style="color:var(--text);text-decoration:none;">+91 7619643039</a></div>
+          <div class="footer-item"><i class="fa-solid fa-envelope"></i><br><br><a href="mailto:btraitrustdeal@gmail.com" style="color:var(--text);text-decoration:none;">btraitrustdeal@gmail.com</a></div>
+          <div class="footer-item"><i class="fa-brands fa-instagram"></i><br><br><a href="https://instagram.com/black_temple_official_" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none;">black_temple_official_</a></div>
         </div>
-        <div style="text-align:center; margin-top:3rem; color:var(--text-muted);">
-          © 2025–2026 BLACK TEMPLE
+        <div style="text-align:center;margin-top:3rem;color:var(--text-muted);font-size:0.9rem;">
+          ©️ 2025–2026 BLACK TEMPLE · ALL INDIA TRUSTED DEALER
         </div>
       </footer>
 
-      <a href="https://wa.me/917619643039" target="_blank" class="whatsapp-float">
+      <a href="https://wa.me/917619643039" target="_blank" rel="noopener" class="whatsapp-float">
         <i class="fa-brands fa-whatsapp"></i>
       </a>
     `;
@@ -662,17 +1239,20 @@ function loadApp() {
     const slider = document.getElementById('priceSlider');
     const display = document.getElementById('priceDisplay');
     if (slider && display) {
-      slider.addEventListener('input', () => {
+      slider.oninput = () => {
         display.textContent = `₹${Number(slider.value).toLocaleString('en-IN')}`;
         renderStore();
-      });
-      // ─── IMPORTANT ─── Always render when main page is shown
-      renderStore();
+      };
     }
+
+    loadAccounts();
   }
 }
 
-window.onload = loadApp;
+// Event listeners
+window.addEventListener('hashchange', loadApp);
+window.addEventListener('load', loadApp);
 </script>
+
 </body>
 </html>
