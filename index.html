@@ -496,6 +496,7 @@
       border-radius: 12px;
       margin: 1rem 0;
       text-align: center;
+      animation: fadeIn 0.3s ease;
     }
 
     .success-message {
@@ -506,6 +507,7 @@
       border-radius: 12px;
       margin: 1rem 0;
       text-align: center;
+      animation: fadeIn 0.3s ease;
     }
 
     @media (max-width: 768px) {
@@ -520,6 +522,7 @@
 <div id="app"></div>
 
 <script>
+// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyAzcJGHzRntlI_YDz3T2Z1SiiARr6hMB1g",
   authDomain: "bunny-8568c.firebaseapp.com",
@@ -530,6 +533,7 @@ const firebaseConfig = {
   measurementId: "G-6TVCBKTX9K"
 };
 
+// Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
@@ -544,6 +548,7 @@ db.enablePersistence({ synchronizeTabs: true })
     }
   });
 
+// Global variables
 let idList = [];
 let currentSort = 'none';
 const slideshowIntervals = {};
@@ -660,7 +665,8 @@ function renderStore() {
 
   container.innerHTML = filtered.length === 0 ? `
     <div style="grid-column:1/-1; text-align:center; padding:3rem; color:var(--text-muted);">
-      <i class="fa-solid fa-box-open fa-3x"></i><p style="margin-top:1rem;">No accounts available</p>
+      <i class="fa-solid fa-box-open fa-3x"></i>
+      <p style="margin-top:1rem;">No accounts available</p>
     </div>
   ` : '';
 
@@ -783,9 +789,10 @@ async function uploadImage(file, docId) {
     uploadTask.on('state_changed',
       (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        // Update progress if needed
         const progressBar = document.querySelector('.upload-progress-bar');
+        const uploadPercentage = document.getElementById('uploadPercentage');
         if (progressBar) progressBar.style.width = progress + '%';
+        if (uploadPercentage) uploadPercentage.textContent = Math.round(progress) + '%';
       },
       (error) => {
         console.error('Upload error:', error);
@@ -804,7 +811,7 @@ async function uploadImage(file, docId) {
   });
 }
 
-// Add image to ID function (FIXED VERSION)
+// Add image to ID function
 window.addImageToId = async (docId) => {
   // Create file input
   const input = document.createElement('input');
@@ -838,6 +845,9 @@ window.addImageToId = async (docId) => {
     const uploadPercentage = document.getElementById('uploadPercentage');
     
     if (progressContainer) progressContainer.style.display = 'block';
+    if (uploadStatus) uploadStatus.textContent = 'Starting upload...';
+    if (progressBar) progressBar.style.width = '0%';
+    if (uploadPercentage) uploadPercentage.textContent = '0%';
 
     const uploadedUrls = [];
     let successCount = 0;
@@ -855,7 +865,6 @@ window.addImageToId = async (docId) => {
         successCount++;
         
         statusDiv.innerHTML = `✅ Uploaded ${successCount} of ${files.length} images...`;
-        if (uploadPercentage) uploadPercentage.textContent = `${Math.round((i + 1) / files.length * 100)}%`;
         
       } catch (error) {
         console.error('Upload error for file:', file.name, error);
@@ -885,9 +894,8 @@ window.addImageToId = async (docId) => {
         // Success message
         statusDiv.className = 'success-message';
         statusDiv.innerHTML = `
-          ✅ Success!<br>
-          - Uploaded: ${successCount} images<br>
-          - Failed: ${errorCount} images<br>
+          <i class="fa-solid fa-check-circle"></i> Success!<br>
+          <small>Uploaded: ${successCount} | Failed: ${errorCount}</small><br>
           <small style="display:block;margin-top:0.5rem;">Refreshing display...</small>
         `;
 
@@ -908,9 +916,8 @@ window.addImageToId = async (docId) => {
         console.error('Firestore update error:', error);
         statusDiv.className = 'error-message';
         statusDiv.innerHTML = `
-          ❌ Error saving to database: ${error.message}<br>
-          Images were uploaded to storage but not saved to Firestore.<br>
-          Please try again or contact support.
+          <i class="fa-solid fa-exclamation-triangle"></i> Error saving to database<br>
+          <small>${error.message}</small>
         `;
       }
     } else {
@@ -931,7 +938,7 @@ async function renderAdminPanel() {
   const content = document.getElementById('adminContent');
   if (!content) return;
 
-  content.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading...</p></div>';
+  content.innerHTML = '<div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i><p>Loading accounts...</p></div>';
 
   try {
     const snap = await db.collection('accounts').orderBy('createdAt', 'desc').get();
@@ -939,6 +946,18 @@ async function renderAdminPanel() {
     idList = accounts;
 
     content.innerHTML = '';
+
+    if (accounts.length === 0) {
+      const noAccountsMsg = document.createElement('div');
+      noAccountsMsg.className = 'admin-card';
+      noAccountsMsg.style.textAlign = 'center';
+      noAccountsMsg.style.padding = '3rem';
+      noAccountsMsg.innerHTML = `
+        <i class="fa-solid fa-box-open fa-3x" style="color:var(--text-muted); margin-bottom:1rem;"></i>
+        <p style="color:var(--text-muted);">No accounts found. Create your first account below.</p>
+      `;
+      content.appendChild(noAccountsMsg);
+    }
 
     accounts.forEach(item => {
       const card = document.createElement('div');
@@ -956,10 +975,10 @@ async function renderAdminPanel() {
         <div class="image-list">${thumbs || '<span style="color:var(--text-muted);padding:1rem;">No images uploaded</span>'}</div>
 
         <label style="display:block;margin-top:1rem;color:var(--text-muted);font-size:0.9rem;">Level</label>
-        <input id="level-${item.id}" type="number" value="${item.level || 0}" placeholder="Level">
+        <input id="level-${item.id}" type="number" value="${item.level || 1}" placeholder="Level">
 
         <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Rank</label>
-        <input id="rank-${item.id}" value="${item.rank || ''}" placeholder="Rank (e.g., MASTER)">
+        <input id="rank-${item.id}" value="${item.rank || 'UNRANKED'}" placeholder="Rank (e.g., MASTER)">
 
         <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Gun Skins</label>
         <input id="gunSkins-${item.id}" type="number" value="${item.gunSkins || 0}" placeholder="Number of gun skins">
@@ -971,10 +990,10 @@ async function renderAdminPanel() {
         <input id="bundle-${item.id}" value="${item.bundle || ''}" placeholder="Bundle name">
 
         <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Description</label>
-        <textarea id="desc-${item.id}" rows="3" placeholder="Account description">${item.description || ''}</textarea>
+        <textarea id="desc-${item.id}" rows="3" placeholder="Account description">${item.description || 'No description'}</textarea>
 
         <label style="display:block;margin-top:0.5rem;color:var(--text-muted);font-size:0.9rem;">Price (₹)</label>
-        <input id="price-${item.id}" type="number" value="${item.price || 0}" placeholder="Price in rupees">
+        <input id="price-${item.id}" type="number" value="${item.price || 500}" placeholder="Price in rupees">
 
         <div style="margin:1.2rem 0;">
           <label style="cursor:pointer;"><input type="checkbox" id="sold-${item.id}" ${item.sold ? 'checked' : ''}> <span style="color:var(--text);">Mark as Sold</span></label>
@@ -988,51 +1007,91 @@ async function renderAdminPanel() {
       content.appendChild(card);
     });
 
+    // Add "Create New Account" button
     const addBtn = document.createElement('button');
-    addBtn.innerHTML = '<i class="fa-solid fa-plus"></i> ADD NEW ACCOUNT';
-    addBtn.style.cssText = 'width:100%;padding:1.4rem;background:#00ff9d;color:#000;border:none;border-radius:999px;font-weight:700;font-size:1.1rem;margin:2rem 0;cursor:pointer;transition:all 0.2s;';
+    addBtn.id = 'createAccountBtn';
+    addBtn.innerHTML = '<i class="fa-solid fa-plus"></i> CREATE NEW ACCOUNT';
+    addBtn.style.cssText = 'width:100%;padding:1.4rem;background:#00ff9d;color:#000;border:none;border-radius:999px;font-weight:700;font-size:1.1rem;margin:2rem 0;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:0.8rem;';
     addBtn.onmouseover = () => addBtn.style.background = '#00cc7d';
     addBtn.onmouseout = () => addBtn.style.background = '#00ff9d';
 
+    // FIXED: Working account creation
     addBtn.onclick = async () => {
       const originalText = addBtn.innerHTML;
       addBtn.disabled = true;
       addBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating account...';
       addBtn.style.opacity = '0.6';
+      addBtn.style.cursor = 'not-allowed';
 
+      // Prepare account data with simple timestamp
       const data = {
         images: [],
-        level: 50,
-        rank: "MASTER",
-        gunSkins: 15,
-        charSkins: "Jett, Sage, Reyna",
-        bundle: "Prime 2.0",
-        description: "New account – edit details and add images",
-        price: 1499,
+        level: 1,
+        rank: "UNRANKED",
+        gunSkins: 0,
+        charSkins: "",
+        bundle: "",
+        description: "New account - please edit details",
+        price: 500,
         sold: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        createdAt: new Date().toISOString() // Simple timestamp that always works
       };
 
       try {
+        // Add to Firestore
         const docRef = await db.collection('accounts').add(data);
+        
+        console.log('Account created successfully with ID:', docRef.id);
+
+        // Show success message
         const msg = document.createElement('div');
         msg.className = 'success-message';
-        msg.textContent = `✓ Account created successfully! ID: ${docRef.id}`;
+        msg.innerHTML = `
+          <i class="fa-solid fa-check-circle" style="font-size:2rem;margin-bottom:0.5rem;"></i><br>
+          <strong>✓ ACCOUNT CREATED SUCCESSFULLY!</strong><br>
+          <small style="display:block;margin-top:0.5rem;">ID: ${docRef.id}</small>
+        `;
         content.insertBefore(msg, content.firstChild);
 
-        setTimeout(() => msg.remove(), 3000);
-
+        // Refresh the admin panel
         await renderAdminPanel();
+
+        // Remove success message after 4 seconds
+        setTimeout(() => {
+          if (msg.parentElement) {
+            msg.style.opacity = '0';
+            msg.style.transition = 'opacity 1s';
+            setTimeout(() => msg.remove(), 1000);
+          }
+        }, 4000);
+
       } catch (err) {
-        console.error('Create error:', err);
+        console.error('Create account error:', err);
+        
+        // Show error message
         const errMsg = document.createElement('div');
         errMsg.className = 'error-message';
-        errMsg.textContent = `Failed to create account: ${err.message}`;
+        errMsg.innerHTML = `
+          <i class="fa-solid fa-exclamation-triangle" style="font-size:2rem;margin-bottom:0.5rem;"></i><br>
+          <strong>❌ FAILED TO CREATE ACCOUNT</strong><br>
+          <small style="display:block;margin-top:0.5rem;">${err.message}</small>
+        `;
         content.insertBefore(errMsg, content.firstChild);
 
+        // Re-enable the button
         addBtn.disabled = false;
         addBtn.innerHTML = originalText;
         addBtn.style.opacity = '1';
+        addBtn.style.cursor = 'pointer';
+
+        // Remove error message after 5 seconds
+        setTimeout(() => {
+          if (errMsg.parentElement) {
+            errMsg.style.opacity = '0';
+            errMsg.style.transition = 'opacity 1s';
+            setTimeout(() => errMsg.remove(), 1000);
+          }
+        }, 5000);
       }
     };
 
@@ -1052,13 +1111,13 @@ window.updateId = async docId => {
   btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
 
   const data = {
-    level: parseInt(document.getElementById(`level-${docId}`).value) || 0,
-    rank: document.getElementById(`rank-${docId}`).value.trim() || 'N/A',
+    level: parseInt(document.getElementById(`level-${docId}`).value) || 1,
+    rank: document.getElementById(`rank-${docId}`).value.trim() || 'UNRANKED',
     gunSkins: parseInt(document.getElementById(`gunSkins-${docId}`).value) || 0,
-    charSkins: document.getElementById(`charSkins-${docId}`).value.trim() || 'None',
-    bundle: document.getElementById(`bundle-${docId}`).value.trim() || 'None',
+    charSkins: document.getElementById(`charSkins-${docId}`).value.trim() || '',
+    bundle: document.getElementById(`bundle-${docId}`).value.trim() || '',
     description: document.getElementById(`desc-${docId}`).value.trim() || 'No description',
-    price: parseInt(document.getElementById(`price-${docId}`).value) || 0,
+    price: parseInt(document.getElementById(`price-${docId}`).value) || 500,
     sold: document.getElementById(`sold-${docId}`).checked
   };
 
@@ -1102,7 +1161,9 @@ window.deleteId = async docId => {
 
     const msg = document.createElement('div');
     msg.className = 'success-message';
-    msg.textContent = '✓ Account deleted successfully';
+    msg.innerHTML = `
+      <i class="fa-solid fa-check-circle"></i> Account deleted successfully
+    `;
     document.getElementById('adminContent').insertBefore(msg, document.getElementById('adminContent').firstChild);
 
     setTimeout(() => msg.remove(), 2000);
