@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BLACK TEMPLE · MULTI‑IMAGE · SORT</title>
+  <title>BLACK TEMPLE · MULTI‑IMAGE · FIXED</title>
 
+  <!-- Firebase v9 Compat -->
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
@@ -12,7 +13,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Exo:wght@500;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <style>
@@ -510,6 +510,19 @@
       animation: fadeIn 0.3s ease;
     }
 
+    .debug-info {
+      background: #1a1a2a;
+      border: 1px solid #ffaa00;
+      color: #ffaa00;
+      padding: 1rem;
+      border-radius: 12px;
+      margin: 1rem 0;
+      font-family: monospace;
+      font-size: 0.85rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
     @media (max-width: 768px) {
       .card-grid { grid-template-columns: 1fr; }
       .banner { height: 160px; }
@@ -522,21 +535,30 @@
 <div id="app"></div>
 
 <script>
-// Firebase Configuration
+// ==================== FIREBASE CONFIGURATION ====================
+// IMPORTANT: The storageBucket URL must be correct!
+// Default format is: [PROJECT_ID].appspot.com
+// Check your Firebase Console > Storage to verify
+
 const firebaseConfig = {
   apiKey: "AIzaSyAzcJGHzRntlI_YDz3T2Z1SiiARr6hMB1g",
   authDomain: "bunny-8568c.firebaseapp.com",
   projectId: "bunny-8568c",
-  storageBucket: "bunny-8568c.firebasestorage.app",
+  // FIXED: Changed from .firebasestorage.app to .appspot.com
+  storageBucket: "bunny-8568c.appspot.com",
   messagingSenderId: "300443815873",
   appId: "1:300443815873:web:eb27d1c33091d3bae42940",
   measurementId: "G-6TVCBKTX9K"
 };
 
 // Initialize Firebase
+console.log('Initializing Firebase with config:', firebaseConfig);
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
+
+// Log storage bucket for debugging
+console.log('Storage bucket:', storage.app.options.storageBucket);
 
 // Enable persistence with error handling
 db.enablePersistence({ synchronizeTabs: true })
@@ -548,16 +570,66 @@ db.enablePersistence({ synchronizeTabs: true })
     }
   });
 
-// Global variables
+// ==================== GLOBAL VARIABLES ====================
 let idList = [];
 let currentSort = 'none';
 const slideshowIntervals = {};
+
+// ==================== HELPER FUNCTIONS ====================
 
 // Helper function to find element by text content
 function findElementByText(selector, text) {
   const elements = document.querySelectorAll(selector);
   return Array.from(elements).find(el => el.textContent.includes(text));
 }
+
+// Test storage connection function
+window.testStorageConnection = async () => {
+  const resultDiv = document.getElementById('storageTestResult');
+  if (!resultDiv) return;
+  
+  resultDiv.innerHTML = 'Testing connection...';
+  resultDiv.style.color = '#ffff00';
+  
+  try {
+    // Try to create a test file (tiny text file)
+    const testRef = storage.ref('test-connection.txt');
+    const testBlob = new Blob(['test'], { type: 'text/plain' });
+    
+    const uploadTask = testRef.put(testBlob);
+    
+    uploadTask.on('state_changed',
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        resultDiv.innerHTML = `Upload test: ${progress.toFixed(0)}%`;
+      },
+      (error) => {
+        console.error('Storage test failed:', error);
+        resultDiv.innerHTML = `❌ Storage test failed: ${error.message}<br><br>`;
+        resultDiv.style.color = '#ff4d6a';
+        
+        // Add troubleshooting tips
+        resultDiv.innerHTML += '<strong>Troubleshooting:</strong>';
+        resultDiv.innerHTML += '<br>1. Check if storageBucket is correct in config';
+        resultDiv.innerHTML += '<br>2. Go to Firebase Console > Storage > Rules';
+        resultDiv.innerHTML += '<br>3. Update rules to allow writes';
+        resultDiv.innerHTML += '<br>4. Make sure Firebase project is on Blaze plan';
+      },
+      async () => {
+        // Success
+        const url = await uploadTask.snapshot.ref.getDownloadURL();
+        resultDiv.innerHTML = `✅ Storage test successful!<br>File URL: ${url.substring(0, 50)}...`;
+        resultDiv.style.color = '#00ff9d';
+        
+        // Clean up test file
+        await testRef.delete();
+      }
+    );
+  } catch (error) {
+    resultDiv.innerHTML = `❌ Storage test failed: ${error.message}`;
+    resultDiv.style.color = '#ff4d6a';
+  }
+};
 
 // Start slideshow function
 function startSlideshow(cardId, images) {
@@ -577,7 +649,6 @@ function startSlideshow(cardId, images) {
 
   if (!slides.length) return;
 
-  // Set first slide active
   slides.forEach((s, i) => s.classList.toggle('active', i === idx));
   if (indicator) indicator.textContent = `${idx + 1}/${images.length}`;
 
@@ -588,7 +659,7 @@ function startSlideshow(cardId, images) {
   }, 3000);
 }
 
-// Load accounts with real-time updates
+// ==================== LOAD ACCOUNTS ====================
 function loadAccounts() {
   const container = document.getElementById('idCardContainer');
   if (container) {
@@ -616,9 +687,8 @@ function loadAccounts() {
     });
 }
 
-// Render store function
+// ==================== RENDER STORE ====================
 function renderStore() {
-  // Clear all slideshow intervals
   Object.keys(slideshowIntervals).forEach(key => {
     clearInterval(slideshowIntervals[key]);
     delete slideshowIntervals[key];
@@ -702,14 +772,14 @@ function renderStore() {
   });
 }
 
-// Set sort function
+// ==================== SORT FUNCTION ====================
 function setSort(type) {
   currentSort = type;
   document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === type));
   renderStore();
 }
 
-// Buy now function
+// ==================== WHATSAPP FUNCTIONS ====================
 window.buyNow = id => {
   const acc = idList.find(a => a.id === id);
   if (!acc || acc.sold) return;
@@ -717,13 +787,12 @@ window.buyNow = id => {
   window.open(`https://wa.me/917619643039?text=${text}`, '_blank');
 };
 
-// Chat now function
 window.chatNow = id => {
   const acc = idList.find(a => a.id === id);
   if (acc) window.open(`https://wa.me/917619643039?text=Hi, interested in ID: Lv ${acc.level} ${acc.rank} (₹${acc.price})`, '_blank');
 };
 
-// Upload image function - FIXED VERSION
+// ==================== FIXED UPLOAD FUNCTION ====================
 async function uploadImage(file, docId) {
   return new Promise((resolve, reject) => {
     // Validate file
@@ -743,6 +812,8 @@ async function uploadImage(file, docId) {
     const safeFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '_');
     const filename = `accounts/${docId}/${timestamp}_${randomString}_${safeFileName}`;
     
+    console.log('Uploading to path:', filename);
+    
     const storageRef = storage.ref(filename);
     
     // Metadata
@@ -756,35 +827,53 @@ async function uploadImage(file, docId) {
       }
     };
 
+    // Start the upload
     const uploadTask = storageRef.put(file, metadata);
 
+    // Progress tracking
     uploadTask.on('state_changed',
       (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload progress:', progress.toFixed(2) + '%');
+        
+        // Update UI
         const progressBar = document.querySelector('.upload-progress-bar');
         const uploadPercentage = document.getElementById('uploadPercentage');
         if (progressBar) progressBar.style.width = progress + '%';
         if (uploadPercentage) uploadPercentage.textContent = Math.round(progress) + '%';
       },
       (error) => {
-        console.error('Upload error:', error);
-        reject(error);
+        // Error handling
+        console.error('Upload error details:', error);
+        
+        // Specific error messages
+        let errorMessage = error.message;
+        if (error.code === 'storage/unauthorized') {
+          errorMessage = 'Storage permission denied. Check Storage rules.';
+        } else if (error.code === 'storage/canceled') {
+          errorMessage = 'Upload was canceled';
+        } else if (error.code === 'storage/unknown') {
+          errorMessage = 'Unknown error occurred. Check CORS configuration.';
+        }
+        
+        reject(new Error(errorMessage));
       },
       async () => {
+        // Success - get download URL
         try {
           const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
           console.log('Upload successful, URL:', downloadURL);
           resolve(downloadURL);
         } catch (error) {
           console.error('Get download URL error:', error);
-          reject(error);
+          reject(new Error('Failed to get download URL: ' + error.message));
         }
       }
     );
   });
 }
 
-// Add image to ID function - COMPLETELY FIXED VERSION
+// ==================== FIXED ADD IMAGE FUNCTION ====================
 window.addImageToId = async (docId) => {
   // Create file input
   const input = document.createElement('input');
@@ -916,7 +1005,7 @@ window.addImageToId = async (docId) => {
   input.click();
 };
 
-// Render admin panel function
+// ==================== RENDER ADMIN PANEL ====================
 async function renderAdminPanel() {
   const content = document.getElementById('adminContent');
   if (!content) return;
@@ -929,6 +1018,18 @@ async function renderAdminPanel() {
     idList = accounts;
 
     content.innerHTML = '';
+
+    // Add debug info at the top
+    const debugInfo = document.createElement('div');
+    debugInfo.className = 'debug-info';
+    debugInfo.innerHTML = `
+      <strong>🔧 Storage Debug Info:</strong><br>
+      Storage Bucket: ${storage.app.options.storageBucket}<br>
+      Project ID: ${firebaseConfig.projectId}<br>
+      <button onclick="testStorageConnection()" style="margin-top:0.5rem;padding:0.3rem 1rem;background:#00d4ff;color:#000;border:none;border-radius:4px;cursor:pointer;">Test Storage Connection</button>
+      <div id="storageTestResult" style="margin-top:0.5rem;"></div>
+    `;
+    content.appendChild(debugInfo);
 
     if (accounts.length === 0) {
       const noAccountsMsg = document.createElement('div');
@@ -998,7 +1099,6 @@ async function renderAdminPanel() {
     addBtn.onmouseover = () => addBtn.style.background = '#00cc7d';
     addBtn.onmouseout = () => addBtn.style.background = '#00ff9d';
 
-    // Working account creation
     addBtn.onclick = async () => {
       const originalText = addBtn.innerHTML;
       addBtn.disabled = true;
@@ -1006,7 +1106,6 @@ async function renderAdminPanel() {
       addBtn.style.opacity = '0.6';
       addBtn.style.cursor = 'not-allowed';
 
-      // Prepare account data with simple timestamp
       const data = {
         images: [],
         level: 1,
@@ -1080,7 +1179,7 @@ async function renderAdminPanel() {
   }
 }
 
-// Update ID function
+// ==================== UPDATE ID FUNCTION ====================
 window.updateId = async docId => {
   const btn = event.target;
   const originalText = btn.innerHTML;
@@ -1124,7 +1223,7 @@ window.updateId = async docId => {
   }
 };
 
-// Delete ID function
+// ==================== DELETE ID FUNCTION ====================
 window.deleteId = async docId => {
   if (!confirm('Are you sure you want to permanently delete this account? This action cannot be undone.')) return;
 
@@ -1155,7 +1254,7 @@ window.deleteId = async docId => {
   }
 };
 
-// Main load function
+// ==================== MAIN LOAD FUNCTION ====================
 function loadApp() {
   const isAdmin = location.pathname.includes('/admin') || location.hash === '#admin';
   const app = document.getElementById('app');
