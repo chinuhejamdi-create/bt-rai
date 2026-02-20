@@ -559,34 +559,6 @@ function findElementByText(selector, text) {
   return Array.from(elements).find(el => el.textContent.includes(text));
 }
 
-// Helper function to validate image URL
-function validateImageUrl(url) {
-  return new Promise((resolve) => {
-    const img = new Image();
-    img.onload = () => resolve(true);
-    img.onerror = () => resolve(false);
-    img.src = url;
-  });
-}
-
-// Retry failed image loads
-function retryImageLoad(imgElement, url, maxRetries = 3) {
-  let retries = 0;
-  
-  const tryLoad = () => {
-    imgElement.src = url + (url.includes('?') ? '&' : '?') + 'retry=' + Date.now();
-  };
-  
-  imgElement.onerror = () => {
-    retries++;
-    if (retries < maxRetries) {
-      setTimeout(tryLoad, 1000 * retries);
-    }
-  };
-  
-  tryLoad();
-}
-
 // Start slideshow function
 function startSlideshow(cardId, images) {
   if (slideshowIntervals[cardId]) {
@@ -751,7 +723,7 @@ window.chatNow = id => {
   if (acc) window.open(`https://wa.me/917619643039?text=Hi, interested in ID: Lv ${acc.level} ${acc.rank} (₹${acc.price})`, '_blank');
 };
 
-// Upload image function
+// Upload image function - FIXED VERSION
 async function uploadImage(file, docId) {
   return new Promise((resolve, reject) => {
     // Validate file
@@ -801,6 +773,7 @@ async function uploadImage(file, docId) {
       async () => {
         try {
           const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+          console.log('Upload successful, URL:', downloadURL);
           resolve(downloadURL);
         } catch (error) {
           console.error('Get download URL error:', error);
@@ -811,7 +784,7 @@ async function uploadImage(file, docId) {
   });
 }
 
-// Add image to ID function
+// Add image to ID function - COMPLETELY FIXED VERSION
 window.addImageToId = async (docId) => {
   // Create file input
   const input = document.createElement('input');
@@ -824,20 +797,6 @@ window.addImageToId = async (docId) => {
     const files = [...e.target.files];
     if (!files.length) return;
 
-    // Find admin card for status placement
-    const adminCard = findElementByText('.admin-card h3 span', docId.slice(0,8))?.closest('.admin-card');
-    const adminContent = document.getElementById('adminContent');
-    
-    // Create status container
-    const statusDiv = document.createElement('div');
-    statusDiv.className = 'upload-status';
-    
-    if (adminCard && adminCard.parentElement) {
-      adminCard.parentElement.insertBefore(statusDiv, adminCard);
-    } else if (adminContent) {
-      adminContent.prepend(statusDiv);
-    }
-
     // Show progress container
     const progressContainer = document.querySelector('.upload-progress-container');
     const progressBar = document.querySelector('.upload-progress-bar');
@@ -848,6 +807,14 @@ window.addImageToId = async (docId) => {
     if (uploadStatus) uploadStatus.textContent = 'Starting upload...';
     if (progressBar) progressBar.style.width = '0%';
     if (uploadPercentage) uploadPercentage.textContent = '0%';
+
+    // Create status message
+    const statusDiv = document.createElement('div');
+    statusDiv.className = 'upload-status';
+    const adminContent = document.getElementById('adminContent');
+    if (adminContent) {
+      adminContent.prepend(statusDiv);
+    }
 
     const uploadedUrls = [];
     let successCount = 0;
@@ -885,21 +852,36 @@ window.addImageToId = async (docId) => {
 
         // Get the current document
         const docRef = db.collection('accounts').doc(docId);
+        const docSnap = await docRef.get();
         
-        // Use arrayUnion to add new images without duplicates
+        if (!docSnap.exists) {
+          throw new Error('Account document not found');
+        }
+
+        // Get current images array
+        const currentData = docSnap.data();
+        const currentImages = currentData.images || [];
+        
+        // Combine existing and new images (avoid duplicates)
+        const allImages = [...new Set([...currentImages, ...uploadedUrls])];
+        
+        // Update the document with the new images array
         await docRef.update({
-          images: firebase.firestore.FieldValue.arrayUnion(...uploadedUrls)
+          images: allImages
         });
+
+        console.log('Firestore update successful. Images:', allImages);
 
         // Success message
         statusDiv.className = 'success-message';
         statusDiv.innerHTML = `
           <i class="fa-solid fa-check-circle"></i> Success!<br>
           <small>Uploaded: ${successCount} | Failed: ${errorCount}</small><br>
+          <small>Total images: ${allImages.length}</small><br>
           <small style="display:block;margin-top:0.5rem;">Refreshing display...</small>
         `;
 
-        // Refresh the admin panel and store view
+        // Refresh both admin panel and store view
         await renderAdminPanel();
         renderStore();
 
@@ -917,7 +899,8 @@ window.addImageToId = async (docId) => {
         statusDiv.className = 'error-message';
         statusDiv.innerHTML = `
           <i class="fa-solid fa-exclamation-triangle"></i> Error saving to database<br>
-          <small>${error.message}</small>
+          <small>${error.message}</small><br>
+          <small>Images were uploaded to storage but not saved to Firestore.</small>
         `;
       }
     } else {
@@ -1015,7 +998,7 @@ async function renderAdminPanel() {
     addBtn.onmouseover = () => addBtn.style.background = '#00cc7d';
     addBtn.onmouseout = () => addBtn.style.background = '#00ff9d';
 
-    // FIXED: Working account creation
+    // Working account creation
     addBtn.onclick = async () => {
       const originalText = addBtn.innerHTML;
       addBtn.disabled = true;
@@ -1034,16 +1017,14 @@ async function renderAdminPanel() {
         description: "New account - please edit details",
         price: 500,
         sold: false,
-        createdAt: new Date().toISOString() // Simple timestamp that always works
+        createdAt: new Date().toISOString()
       };
 
       try {
-        // Add to Firestore
         const docRef = await db.collection('accounts').add(data);
         
         console.log('Account created successfully with ID:', docRef.id);
 
-        // Show success message
         const msg = document.createElement('div');
         msg.className = 'success-message';
         msg.innerHTML = `
@@ -1053,10 +1034,9 @@ async function renderAdminPanel() {
         `;
         content.insertBefore(msg, content.firstChild);
 
-        // Refresh the admin panel
         await renderAdminPanel();
+        renderStore();
 
-        // Remove success message after 4 seconds
         setTimeout(() => {
           if (msg.parentElement) {
             msg.style.opacity = '0';
@@ -1068,7 +1048,6 @@ async function renderAdminPanel() {
       } catch (err) {
         console.error('Create account error:', err);
         
-        // Show error message
         const errMsg = document.createElement('div');
         errMsg.className = 'error-message';
         errMsg.innerHTML = `
@@ -1078,13 +1057,11 @@ async function renderAdminPanel() {
         `;
         content.insertBefore(errMsg, content.firstChild);
 
-        // Re-enable the button
         addBtn.disabled = false;
         addBtn.innerHTML = originalText;
         addBtn.style.opacity = '1';
         addBtn.style.cursor = 'pointer';
 
-        // Remove error message after 5 seconds
         setTimeout(() => {
           if (errMsg.parentElement) {
             errMsg.style.opacity = '0';
